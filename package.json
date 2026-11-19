@@ -1,6 +1,6 @@
 {
   "name": "dsh-research-harness",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "main": "lib/index.js",
   "description": "科研工作台：证据契约（守卫+台账+完成语义）+ 科研技能，装进 DSH 独立预设",
@@ -11,7 +11,8 @@
     "docs",
     "test",
     "dsh.patch.yml",
-    "scenarios"
+    "scenarios",
+    "bin"
   ],
   "scripts": {
     "test": "node --test test/"
@@ -40,5 +41,8 @@
   "homepage": "https://github.com/Oseas031/dsh-research-harness#readme",
   "bugs": {
     "url": "https://github.com/Oseas031/dsh-research-harness/issues"
+  },
+  "bin": {
+    "research-harness": "bin/research-harness.mjs"
   }
 }

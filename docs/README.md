@@ -27,6 +27,8 @@
 - `lib/verifier.js` — 可插拔校验器（evidence 复验默认；command=Lean 接口）
 - `lib/index.js` — apply() 接线：ctx.tools.guard() + ctx.tools.register() + ctx.on(subagent/end)
 - `instructions/RESEARCH.md` — 研究纪律全文（AGENTS.md 指针指向它）
+- `bin/research-harness.mjs` — CLI 入口（issue #4：任意会话/裸 shell 操作同一台账）
+- `lib/ingest.js` — 报告结构化入账（findings 块 → ledger，verifiedBy 状态）
 - `skills/` — 10 个科研技能；`test/` — node:test 单测 + mock-ctx 契约测试
 
 ## clusterScale（可玩参数）
@@ -41,6 +43,8 @@ solo（禁一切派单）/ delegate（默认，主从）/ cluster（放开实验
 预设组合层（persona/工具面/技能根）仍需一次 DSH 重启做一次性确认。
 
 ## 状态
+
+- v0.4.1（当前）：dogfood 实测暴露的四个工程缺口修复（issue #4-#7）——CLI 入口 `research-harness`（bin/，与插件工具共用 lib，route 调用落 route-check 检查点）；报告结构化入账 lib/ingest.js（```findings 块 + verifiedBy: agent-reported/lead-verified + markVerified 升级）；route() 消费验收充分性规格 acceptance（minFindings/minObservedRatio/requiredRouteChecks，缺省完全向后兼容）；expectation-alignment 技能增加对齐卡持久化规约（六键 frontmatter + 探针 verdict 三值 adopt/reject/reframe）。
 
 - v0.3.1（当前）：可移植性修复——技能不再依赖 dsh.patch.yml 里的绝对路径 customSkillDirs，插件在 apply() 里用 import.meta.url 自定位 skills/ 并通过 ctx.skills.registerProvider() 注册 provider（rank=600 与 BUNDLED_SKILL_RANK 对齐）；ledgerRoot 缺省改为 ~/.dsh/research-harness（ctx.dshHomePath），显式配置优先。测试 40/40，harness-lab 协议 11/11（新增 P4：provider 真挂载验收）。
 - v0.3.0：verifier evidence 复验链、clusterScale 可玩参数（delegate/solo）、四工具全量（findings.record/status/aggregate/challenge）。

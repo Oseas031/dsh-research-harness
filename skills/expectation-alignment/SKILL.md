@@ -63,6 +63,16 @@ description: 研究任务开工前的预期对齐协议（六层对齐卡 + 探�
 
 对齐深度 ∝ 任务成本 × 不可逆性。过度对齐 = 分析瘫痪，同为失败模式。小改轻量 spec，批量执行全卡。
 
+## 持久化（v0.4.1，issue #7：对齐上下文不随会话蒸发）
+
+对齐卡与探针问答必须落盘成工作区文档，跨会话可追溯：
+
+- **位置**：`<工作区>/.research/alignment/<TASK-ID>.md`（无 TASK-ID 用任务 slug）
+- **对齐卡**：YAML frontmatter 六键（goal/concept/scope/verify/context/unknowns），每键一句话或列表；边界层写非目标与红线（如「原始材料零写入」）
+- **探针问答**：probes 段逐条 question / options[] / answer / verdict；verdict 三值 **adopt | reject | reframe**——reframe（用户重构了选项，给出扩展版/改范围/新约束）是涌现期望的显式落点，必须记录，不得只写进 unknown.resolve 的自由文本
+- **台账联动**：对齐缺口登记为 unknown（blocker/non-blocker/parameterizable），reframe 采纳的涌现项进对齐卡正式层；交付时 diff 三栏以该文档为准
+- 当前手工维护（模板即上述结构）；格式稳定后由 CLI/工具接管
+
 ## 详细内容（按需读取）
 
 协议完整设计依据见 dsh-workspace RESEARCH-0002（六层/双通道/治理规则的来龙去脉与实证）。
