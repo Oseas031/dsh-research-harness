@@ -1,0 +1,4 @@
+No LICENSE file in the upstream repository (bahayonghang/academic-writing-skills@1689d44).
+Its README states:
+
+  License: Academic Use Only — Not for commercial use.

@@ -1,0 +1,15 @@
+# harness-lab：科研工作台插件的模拟验收环境（真实 cordis Loader + 真实 ToolsService/SystemPrompt，无 GUI 无 DSH 重启）
+- id: system-prompt
+  name: '@deepseek-ai/dsh-system-prompt'
+- id: tools
+  name: '@deepseek-ai/dsh-tools'
+- id: skill
+  name: '@deepseek-ai/dsh-skill'
+- id: research-harness-core
+  name: 'E:/dsh-research-harness/lib/index.js'
+  config:
+    clusterScale: delegate
+    ledgerRoot: 'E:/dsh-research-harness/harness-lab/.research'
+    verifier:
+      kind: evidence
+      enabled: true

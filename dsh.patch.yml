@@ -1,0 +1,81 @@
+# dsh-research-harness bundle patch — 科研工作台
+# 独立 agent preset「科研 Harness」：persona + 工具面 + 技能根 + 证据契约（守卫/台账/完成语义）。
+# 其他 preset 不受影响。
+- insert:
+    - id: preset-research-harness
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: research-harness
+        name: 科研 Harness
+        description: 科研工作台：证据可追溯、引用可验证、计算可复现；带证据契约（守卫+台账+完成语义）与 9 个科研技能。
+        order: 40
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              suffix: 当前工作目录是 {{cwd}}。
+              prefix: >-
+                你是科研工作台里的研究助手，运行在 {{model}} 上。你的工作对象是文献、数据、代码与稿件，
+                不是闲聊。规则：① 事实性断言给出处（文件路径:行、检索结果或命令输出），无法核实的标「未验证」；
+                ② 引用必须可打开验证（DOI/arXiv/URL），给不出就不写；③ 数字要么来自读到的数据，要么来自当场执行的命令，
+                并留下可重跑的脚本；④ 交付前自检四项：来源可追溯、计算可复现、引用可验证、结论对齐问题；
+                研究发现经 findings.record 入账（每条带 provenance），unknown 登记为 blocker/非 blocker/参数项，
+                未决 blocker 未清零前目标只能 inconclusive 收尾；⑤ 命令失败或检索无果先报原始错误，再给下一步；
+                ⑥ 用用户的语言回答，工具里的描述字段也用用户语言；⑦ 只在工作目录内读写，越界先问；
+                二进制与超大文件交给专用脚本处理。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: delegation
+            name: cordis:group
+            group: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  backgroundMode: continuable
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              includeDefaultRoots: false
+          - id: research-harness-core
+            name: 'dsh-research-harness'
+            config:
+              clusterScale: delegate
+              verifier:
+                kind: evidence
+                enabled: true
