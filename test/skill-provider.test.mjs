@@ -78,7 +78,7 @@ test('provider: get() 装回完整定义', async () => {
   assert.equal(await provider.get({}, {}), undefined);
 });
 
-test('provider: 品牌残留红线——技能目录无 .clawsgo-rev/__pycache__', () => {
+test('provider: 残留红线——技能目录无逆向工作残留（.audit-rev/__pycache__）', () => {
   const walk = (d) => {
     for (const e of readdirSync(d, { withFileTypes: true })) {
       const fp = join(d, e.name);
@@ -86,7 +86,7 @@ test('provider: 品牌残留红线——技能目录无 .clawsgo-rev/__pycache__
         assert.ok(e.name !== '__pycache__', '残留目录: ' + fp);
         walk(fp);
       } else {
-        assert.ok(e.name !== '.clawsgo-rev', '残留文件: ' + fp);
+        assert.ok(e.name !== '.audit-rev', '残留文件: ' + fp);
       }
     }
   };
