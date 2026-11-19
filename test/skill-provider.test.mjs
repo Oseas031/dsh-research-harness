@@ -8,7 +8,8 @@ import { createHarnessSkillProvider, registerHarnessSkills, SKILL_PROVIDER_NAME,
 
 const PKG = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS = join(PKG, 'skills');
-const EXPECTED = ['humanizer-paper', 'latex-paper-en', 'latex-thesis-zh', 'literature-search-arxiv', 'nature-polishing', 'qu-ai-wei', 'sci-figure', 'scientific-problem-selection', 'validate-data'];
+const EXPECTED = ['expectation-alignment',
+  'humanizer-paper', 'latex-paper-en', 'latex-thesis-zh', 'literature-search-arxiv', 'nature-polishing', 'qu-ai-wei', 'sci-figure', 'scientific-problem-selection', 'validate-data'];
 const FIXTURE = "---\nname: t1\ndescription: \"带 \\\"内嵌引号\\\" 与: 冒号\"\ntags: [a, \"b c\", 'd']\nblock:\n  - x\n  - y\nfold: >-\n  第一行\n  第二行\n---\n\n正文";
 
 test('frontmatter: 9 个真实 SKILL.md 全部解析出 name+description', () => {
@@ -44,12 +45,12 @@ test('isSkillName/parseInvocationPolicy 语义', () => {
   assert.deepEqual(parseInvocationPolicy({ 'user-invocable': false }), { modelInvocable: true, userInvocable: false });
 });
 
-test('provider: list() 返回 9 技能且候选字段齐备', async () => {
+test('provider: list() 返回 10 技能且候选字段齐备', async () => {
   const logs = [];
   const provider = createHarnessSkillProvider({ skillsDir: SKILLS, log: (e) => logs.push(e) });
   assert.equal(provider.name, SKILL_PROVIDER_NAME);
   const candidates = await provider.list({});
-  assert.equal(candidates.length, 9, '应有 9 个技能，实际 ' + candidates.length + '；skip 日志: ' + JSON.stringify(logs));
+  assert.equal(candidates.length, 10, '应有 10 个技能，实际 ' + candidates.length + '；skip 日志: ' + JSON.stringify(logs));
   const names = candidates.map(c => c.name).sort();
   assert.deepEqual(names, [...EXPECTED].sort());
   for (const c of candidates) {
@@ -113,7 +114,7 @@ test('registerHarnessSkills: 有注册表时挂上并计数', () => {
   };
   const r = registerHarnessSkills(fakeCtx, { skillsDir: SKILLS });
   assert.equal(r.state, 'ok');
-  assert.equal(r.count, 9);
+  assert.equal(r.count, 10);
   assert.equal(registered.length, 1);
   assert.equal(typeof r.dispose, 'function');
 });

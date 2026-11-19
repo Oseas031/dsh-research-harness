@@ -27,7 +27,7 @@
 - `lib/verifier.js` — 可插拔校验器（evidence 复验默认；command=Lean 接口）
 - `lib/index.js` — apply() 接线：ctx.tools.guard() + ctx.tools.register() + ctx.on(subagent/end)
 - `instructions/RESEARCH.md` — 研究纪律全文（AGENTS.md 指针指向它）
-- `skills/` — 9 个科研技能；`test/` — node:test 单测 + mock-ctx 契约测试
+- `skills/` — 10 个科研技能；`test/` — node:test 单测 + mock-ctx 契约测试
 
 ## clusterScale（可玩参数）
 

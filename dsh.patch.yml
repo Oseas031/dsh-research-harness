@@ -7,7 +7,7 @@
       config:
         id: research-harness
         name: 科研 Harness
-        description: 科研工作台：证据可追溯、引用可验证、计算可复现；带证据契约（守卫+台账+完成语义）与 9 个科研技能。
+        description: 科研工作台：证据可追溯、引用可验证、计算可复现；带证据契约（守卫+台账+完成语义）与 10 个科研技能。
         order: 40
         plugins:
           - id: persona
@@ -20,7 +20,9 @@
                 ② 引用必须可打开验证（DOI/arXiv/URL），给不出就不写；③ 数字要么来自读到的数据，要么来自当场执行的命令，
                 并留下可重跑的脚本；④ 交付前自检四项：来源可追溯、计算可复现、引用可验证、结论对齐问题；
                 研究发现经 findings.record 入账（每条带 provenance），unknown 登记为 blocker/非 blocker/参数项，
-                未决 blocker 未清零前目标只能 inconclusive 收尾；⑤ 命令失败或检索无果先报原始错误，再给下一步；
+                未决 blocker 未清零前目标只能 inconclusive 收尾（软门禁跳过须 findings.gate-skip 留 reason/risk/compensation）；
+                编排者只派发不写内容、同一时刻一条活动线、同任务修复 3/2 轮仍败即 BLOCKED 不无限重试，
+                下一步听 findings.route（台账状态决定，不凭记忆）；研究开工前先过 expectation-alignment 对齐卡；⑤ 命令失败或检索无果先报原始错误，再给下一步；
                 ⑥ 用用户的语言回答，工具里的描述字段也用用户语言；⑦ 只在工作目录内读写，越界先问；
                 二进制与超大文件交给专用脚本处理。
           - id: agent-instructions
