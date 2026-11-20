@@ -4,7 +4,8 @@
  * 与插件工具共用 lib（单一实现，收据同规）。route 每次调用落 route-check（检查点机读化）。
  */
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Ledger } from '../lib/ledger.js';
 import { route } from '../lib/route.js';
 import { verifyLedger } from '../lib/receipts.js';
@@ -22,6 +23,11 @@ const USAGE = `用法: research-harness <command> [flags]
   status                                  台账统计 + 未决 blocker
   ingest --file report.md --source SRC [--task TASK-0000]
   mark-verified --id E5 [--note ...]
+  evolve init --name E --surface 'skills/<name>/**' [--evals evals/skills/<name>] [--root DIR]
+  evolve hash --file skills/x/SKILL.md [--root DIR]
+  evolve apply --name E --candidate proposal.json [--root DIR]
+  evolve select --name E [--root DIR] [--ledger DIR]
+  evolve log|verify|champion --name E [--root DIR]
 通用: --ledger DIR（缺省 ./.research 或 $RESEARCH_LEDGER）`;
 
 const args = process.argv.slice(2);
@@ -95,6 +101,31 @@ try {
     case 'mark-verified': {
       const rec = markVerified(led, need('id'), flags.note);
       out({ ok: true, id: rec.id, ref: rec.ref, status: 'lead-verified' }); break;
+    }
+    case 'evolve': {
+      const sub = args[1];
+      const { Evolver, sha256Bytes } = await import('../lib/evolve.js');
+      const root = flags.root ? resolve(flags.root) : fileURLToPath(new URL('../', import.meta.url));
+      if (sub === 'hash') {
+        const file = need('file');
+        out({ file, sha256: sha256Bytes(readFileSync(join(root, file))) }); break;
+      }
+      const ev = new Evolver(root, need('name'));
+      if (sub === 'init') {
+        const contract = ev.init({ surface: need('surface'), ...(typeof flags.evals === 'string' ? { evalsDir: flags.evals } : {}) });
+        out({ ok: true, contract }); break;
+      }
+      if (sub === 'apply') {
+        const result = ev.applyProposal(resolve(need('candidate')));
+        out({ ...result, ok: result.status === 'applied' });
+        if (result.status === 'invalid') process.exitCode = 2;
+        break;
+      }
+      if (sub === 'select') { out({ ok: true, ...ev.select({ ledger: led }) }); break; }
+      if (sub === 'log') { out({ events: ev.log() }); break; }
+      if (sub === 'verify') { const result = ev.verifyArchive(); out(result); if (!result.ok) process.exitCode = 1; break; }
+      if (sub === 'champion') { out({ champion: ev.champion() }); break; }
+      console.error('未知 evolve 子命令: ' + String(sub) + '（init/hash/apply/select/log/verify/champion）'); process.exit(1);
     }
     default:
       console.error('未知命令: ' + cmd + '\n' + USAGE); process.exit(1);

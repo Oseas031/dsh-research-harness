@@ -1,13 +1,21 @@
 {
   "name": "dsh-research-harness",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "type": "module",
   "main": "lib/index.js",
-  "description": "科研工作台：证据契约（守卫+台账+完成语义）+ 科研技能，装进 DSH 独立预设",
+  "description": "科研工作台：证据守卫、台账、完成门禁、CLI、配对技能进化与 10 个科研技能",
   "files": [
     "lib",
+    "CHANGELOG.md",
     "instructions",
     "skills",
+    "evals",
+    "harness-lab/lab.mjs",
+    "harness-lab/protocol.mjs",
+    "harness-lab/runtime.mjs",
+    "harness-lab/profile",
+    "harness-lab/scenarios",
+    "harness-lab/README.md",
     "docs",
     "test",
     "dsh.patch.yml",
@@ -15,7 +23,11 @@
     "bin"
   ],
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test test/*.test.mjs",
+    "test:protocol": "node harness-lab/protocol.mjs"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dsh": {
     "bundle": {

@@ -189,3 +189,14 @@ Every non-trivial analysis should include:
 以下章节已移到 references，需要时再打开：
 
 - [references/validate-data-details-1.md](references/validate-data-details-1.md)
+
+---
+
+## Artifact Consistency, Sampling, and Traceability
+
+Apply these checks before delivery:
+
+- **Reconcile mixed sources before comparing.** Never silently mix different artifacts or runs within one comparison table. Label mixed-source cells or rows and complete reconciliation first; across artifacts, verify A/B labels, group mappings, and seed conventions, recording any alignment or relabeling.
+- **Expose sampling risk.** Mark single-sample results and non-reproducible seeds as risks. Fix and record seeds, repeat sampling, and report the interval with explicit lower and upper bounds (or label a bound-only result as such). If recalculation cannot be performed, mark the result `unverified`.
+- **Make every finding traceable.** For each finding, cite the source file and line, artifact and run, and exact source cell(s) (table row/column or spreadsheet coordinates). Findings missing this evidence chain remain `unverified`.
+- **Independently recompute derived arithmetic.** For every derived ratio, percentage, or multiplier, independently recalculate it from the raw numerator and raw denominator, and retain the raw numerator, raw denominator, and resulting ratio/percentage/multiplier in the evidence record. Never merely repeat arithmetic reported by the analysis; if the raw counts are missing, mark the derived value `unverified`.

@@ -1,4 +1,4 @@
-# harness-lab：科研工作台插件的模拟验收环境（真实 cordis Loader + 真实 ToolsService/SystemPrompt，无 GUI 无 DSH 重启）
+# harness-lab 模板：runtime.mjs 在系统临时目录生成真实 profile。
 - id: system-prompt
   name: '@deepseek-ai/dsh-system-prompt'
 - id: tools
@@ -6,10 +6,10 @@
 - id: skill
   name: '@deepseek-ai/dsh-skill'
 - id: research-harness-core
-  name: 'E:/dsh-research-harness/lib/index.js'
+  name: '__RESEARCH_HARNESS_ENTRY__'
   config:
     clusterScale: delegate
-    ledgerRoot: 'E:/dsh-research-harness/harness-lab/.research'
+    ledgerRoot: '__HARNESS_LAB_LEDGER_DIR__'
     verifier:
       kind: evidence
       enabled: true

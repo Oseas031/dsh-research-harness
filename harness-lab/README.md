@@ -1,37 +1,49 @@
-# harness-lab — 科研工作台插件的模拟验收环境
+# harness-lab — 科研工作台插件的真实协议验收环境
 
-**改完插件代码直接跑，不用重启 DSH。** 每次运行用真实的生产装配路径：
+**改完插件代码直接跑，不用重启 DSH。** 每次运行使用真实生产装配路径：
 
-- 真实 cordis Context + Loader（boot()，与 DSH profile 同一启动函数）
-- 真实 @deepseek-ai/dsh-tools ToolsService（官方 guard 链 / definitions / checkGuards）
-- 真实 @deepseek-ai/dsh-system-prompt SystemPrompt
-- 插件本体从 E:/dsh-research-harness/lib/index.js 按绝对路径挂载（改码即生效，下一次进程 import 拿新的）
+- 真实 cordis Context + Loader（`boot()`，与 DSH profile 同一启动函数）
+- 真实 `@deepseek-ai/dsh-tools` ToolsService（官方 guard 链 / definitions / checkGuards）
+- 真实 `@deepseek-ai/dsh-system-prompt` SystemPrompt
+- 插件入口和仓库根目录从 `import.meta.url` 推导，移动检出目录后无需改码
 
-裸包名经 bareModuleBaseUrl 指向 DSH 安装的 node_modules（官方内嵌者通道），无需 pnpm install。
+裸包名经 `bareModuleBaseUrl` 指向 DSH 安装内的 `node_modules`，无需在仓库安装这些生产依赖。
 
-## 用法
+## 环境与运行
+
+需要 Node.js 22 或更高版本，以及一份本机 DSH 安装。运行时会自动探测常见安装位置；也可用环境变量显式指定：
+
+| 变量 | 含义 |
+| --- | --- |
+| `DSH_BOOT_PATH` | `@deepseek-ai/dsh-app-boot/lib/index.js` 的路径或 file URL；单独设置时会自动推导 `bareModuleBaseUrl` |
+| `DSH_BARE_MODULE_BASE_URL` | DSH 安装内 `node_modules` 的路径或 file URL；单独设置时会自动推导 boot 入口 |
+| `HARNESS_LAB_LEDGER_DIR` | 可选台账输出目录；默认是随仓库位置推导的 `harness-lab/.research` |
+| `DSH_INSTALL_DIR` | 可选 DSH 安装根目录，用于非标准安装位置探测 |
+
+在仓库根目录运行：
 
 ```bash
-# 完整验收协议（9 项：挂载/注册/拒/入账/留痕/blocker/resolve）
-node protocol.mjs
+# 完整真实协议（当前 32 项）
+npm run test:protocol
 
-# 自定义场景（模板见 scenarios/smoke.mjs）
-node lab.mjs scenarios/smoke.mjs          # 每次清空 .research
-node lab.mjs scenarios/smoke.mjs --keep   # 保留 .research 产物供检查
+# 通用场景；默认每次清空台账
+node harness-lab/lab.mjs harness-lab/scenarios/smoke.mjs
+
+# 保留既有台账供检查
+node harness-lab/lab.mjs harness-lab/scenarios/smoke.mjs --keep
 ```
 
-node 路径：C:\Users\ASUS\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe
+`profile/cordis.yml` 是带占位符的模板。每次运行会在操作系统临时目录生成真实 profile，写入当前仓库的插件入口与台账目录，并在退出时清理。CI 不运行该协议：它需要本机 DSH 生产模块，CI 只执行离线单测与发布包检查。
 
 ## 结构
 
-- profile/cordis.yml — 三条目最小组合：system-prompt + tools + 插件（绝对路径 + config）
-- protocol.mjs — 完整验收协议（当前 9/9 绿）
-- lab.mjs — 通用场景 runner（boot → defs → scenario → verdict）
-- scenarios/ — 场景库
-- .research/ — 台账/守卫日志产物（guard-log.jsonl、ledger.jsonl）
+- `runtime.mjs` — 仓库路径推导、DSH 环境变量/本机探测、临时 profile 生命周期
+- `profile/cordis.yml` — system-prompt + tools + skill + 插件的可移植模板
+- `protocol.mjs` — 32 项真实协议；P8 进化 fixture 也在系统临时目录创建并清理
+- `lab.mjs` — 通用场景 runner（boot → definitions → scenario → verdict）
+- `scenarios/` — 场景库
+- `.research/` — 台账/守卫日志产物（`guard-log.jsonl`、`ledger.jsonl`）
 
-## 边界（诚实声明）
+## 验证边界
 
-lab 验证的是**插件契约层**（guard 链、工具注册、台账、完成语义）——这部分迭代从此零重启。
-预设组合层（persona 七条、工具面、技能根 via dsh.patch.yml）仍需一次 DSH 重启在 UI 里确认；
-但那是一次性验收，不是迭代成本。
+lab 验证的是**插件契约层**（guard 链、工具注册、台账、完成语义、技能进化），这部分迭代无需重启。预设组合层（persona、工具面、技能根 via `dsh.patch.yml`）仍需在 DSH UI 里确认。

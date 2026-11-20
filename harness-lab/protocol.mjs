@@ -1,18 +1,19 @@
-import { readFileSync, existsSync, rmSync, writeFileSync } from 'node:fs';
-import { pathToFileURL } from 'node:url';
-import { boot } from "file:///C:/Users/ASUS/AppData/Local/Programs/DeepSeek%20Harness/resources/app/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js";
-import { Ledger } from "file:///E:/dsh-research-harness/lib/ledger.js";
+import { readFileSync, existsSync, rmSync, writeFileSync, mkdirSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { Ledger } from '../lib/ledger.js';
+import { Evolver } from '../lib/evolve.js';
+import { createHarnessLab } from './runtime.mjs';
 
-const ROOT_YML = 'E:/dsh-research-harness/harness-lab/profile/cordis.yml';
-const LEDGER_DIR = 'E:/dsh-research-harness/harness-lab/.research';
+const lab = await createHarnessLab();
+const LEDGER_DIR = lab.ledgerDir;
 const results = [];
 const step = (name, pass, detail) => { results.push({ name, pass, detail }); console.log((pass ? 'PASS' : 'FAIL') + ' | ' + name + (detail ? ' | ' + detail : '')); };
 
-if (existsSync(LEDGER_DIR)) rmSync(LEDGER_DIR, { recursive: true, force: true });
-
-const ctx = await boot('harness-lab', ROOT_YML, [], undefined, "file:///C:/Users/ASUS/AppData/Local/Programs/DeepSeek%20Harness/resources/app/dsh/node_modules/");
-
+let ctx;
 try {
+  if (existsSync(LEDGER_DIR)) rmSync(LEDGER_DIR, { recursive: true, force: true });
+  ctx = await lab.boot('harness-lab', lab.profilePath, [], undefined, lab.bareModuleBaseUrl);
   // ---- P0: real services + registration via official definitions() ----
   step('P0 真实服务挂载（ToolsService + SystemPrompt）',
     !!(ctx.tools && typeof ctx.tools.guard === 'function' && typeof ctx.tools.checkGuards === 'function'));
@@ -120,10 +121,203 @@ try {
   step('P7 修复轮 2/2（delegate）→ BLOCKED',
     r7b?.action !== 'BLOCKED' && r7c?.action === 'BLOCKED', 'round1=' + r7b?.action + ' round2=' + r7c?.action);
 
+  // ---- P8: 技能进化闭环（v0.5）：真实 boot 内跑独立临时 fixture，结束后无残留 ----
+  const p8Expect = (condition, message) => { if (!condition) throw new Error(message); };
+  const p8Check = (name, check) => {
+    try {
+      const detail = check();
+      step(name, true, typeof detail === 'string' ? detail : JSON.stringify(detail));
+    } catch (error) {
+      step(name, false, String(error?.message ?? error).slice(0, 240));
+    }
+  };
+  const p8SkillRel = 'skills/p8-fixture/SKILL.md';
+  const p8EvalsRel = 'evals/skills/p8-fixture';
+  const p8Parent = '# P8 fixture\n\nBase guidance.\n';
+  const p8Kept = p8Parent + '\nAlways record the random seed for reproducible sampling.\n';
+  const p8FixtureLib = '// fixture evaluator code; never imported or executed\n';
+  let p8Root = '';
+  let p8Main;
+  let p8Forbidden;
+  const p8WriteProposal = (id, file, newContent) => {
+    p8Expect(p8Root, 'fixture 尚未创建');
+    const path = join(p8Root, '.tmp', 'proposals', id + '.json');
+    writeFileSync(path, JSON.stringify({
+      id, rationale: 'P8 isolated fixture behavior proposal',
+      mutations: [{ file, new_content: newContent }],
+    }, null, 2) + '\n', 'utf8');
+    return path;
+  };
+  const p8WriteVerdicts = (applied, controlHardPass, treatmentHardPass) => {
+    const manifest = JSON.parse(readFileSync(join(
+      p8Root, '.evolve', 'p8-main', 'gens', 'gen' + applied.gen + '.json'), 'utf8'));
+    const cases = JSON.parse(readFileSync(join(
+      p8Root, p8EvalsRel, 'behavior-cases.json'), 'utf8')).cases;
+    for (const label of ['A', 'B']) {
+      const role = manifest.labels[label];
+      const hardPass = role === 'control' ? controlHardPass : treatmentHardPass;
+      const results = Object.fromEntries(cases.map(item => [
+        item.id, !item.hard || hardPass ? 'pass' : 'fail',
+      ]));
+      const evidence = Object.fromEntries(cases.map(item => [
+        item.id, role + ' fixture text for ' + item.id,
+      ]));
+      writeFileSync(manifest.packets[label].verdict_path, JSON.stringify({
+        packet_id: manifest.packets[label].packet_id, results, evidence,
+      }, null, 2) + '\n', 'utf8');
+    }
+  };
+  try {
+    p8Root = mkdtempSync(join(tmpdir(), 'dsh-research-harness-p8-'));
+    for (const dir of [
+      join(p8Root, 'skills', 'p8-fixture'), join(p8Root, p8EvalsRel),
+      join(p8Root, 'lib'), join(p8Root, 'bin'), join(p8Root, 'test'),
+      join(p8Root, 'harness-lab'), join(p8Root, '.tmp', 'proposals'),
+    ]) mkdirSync(dir, { recursive: true });
+    writeFileSync(join(p8Root, p8SkillRel), p8Parent, 'utf8');
+    writeFileSync(join(p8Root, p8EvalsRel, 'behavior-cases.json'), JSON.stringify({
+      cases: [
+        { id: 'base', prompt: 'Does the fixture retain its base guidance?' },
+        { id: 'seed', prompt: 'Does the fixture require a reproducible random seed?', hard: true },
+      ],
+    }, null, 2) + '\n', 'utf8');
+    writeFileSync(join(p8Root, p8EvalsRel, 'rubric.md'),
+      '# Frozen P8 rubric\n\nPass seed only when reproducible random-seed guidance is explicit.\n', 'utf8');
+    writeFileSync(join(p8Root, 'lib', 'evolve.js'), p8FixtureLib, 'utf8');
+    writeFileSync(join(p8Root, 'bin', 'fixture.mjs'), '// fixture bin\n', 'utf8');
+    writeFileSync(join(p8Root, 'test', 'fixture.test.mjs'), '// fixture test\n', 'utf8');
+    writeFileSync(join(p8Root, 'harness-lab', 'protocol.mjs'), '// fixture protocol\n', 'utf8');
+    p8Main = new Evolver(p8Root, 'p8-main');
+
+    p8Check('P8 真实 boot 上下文 init：独立 surface + 冻结 evaluator', () => {
+      const contract = p8Main.init({ surface: 'skills/p8-fixture/**', evalsDir: p8EvalsRel });
+      p8Expect(!!ctx.tools && contract.gen === 0, '真实 boot 或 gen=0 不成立');
+      p8Expect(contract.surface === 'skills/p8-fixture/**' && contract.evals_dir === p8EvalsRel,
+        'surface/evals_dir 契约不符');
+      p8Expect(/^[0-9a-f]{64}$/.test(contract.evaluator_id), 'evaluator_id 不是 SHA-256');
+      return 'evaluator=' + contract.evaluator_id.slice(0, 12) + ' fixture=' + p8Root;
+    });
+
+    let applied;
+    p8Check('P8 applyProposal：候选落盘并生成随机 A/B packet', () => {
+      applied = p8Main.applyProposal(p8WriteProposal('p8-keep', p8SkillRel, p8Kept));
+      p8Expect(applied?.status === 'applied' && applied.gen === 1, JSON.stringify(applied));
+      p8Expect(readFileSync(join(p8Root, p8SkillRel), 'utf8') === p8Kept, '候选正文未落盘');
+      for (const label of ['A', 'B']) {
+        const packet = JSON.parse(readFileSync(applied.packets[label].path, 'utf8'));
+        p8Expect(packet.packet_id === applied.packets[label].packet_id && packet.cases.length === 2,
+          'packet ' + label + ' 不完整');
+        p8Expect(!JSON.stringify(packet).includes('"labels"'), 'packet 泄漏 control/treatment 映射');
+      }
+      return 'gen=1 packets=' + applied.verdict_paths.length;
+    });
+
+    p8Check('P8 select：配对揭盲 keep + Ledger champion 记录', () => {
+      p8WriteVerdicts(applied, false, true);
+      const fixtureLedger = new Ledger(join(p8Root, '.research'), { receipts: true });
+      const selected = p8Main.select({ ledger: fixtureLedger });
+      p8Expect(selected.decision === 'kept' && selected.gen === 1 && selected.candidate === 'p8-keep',
+        JSON.stringify(selected));
+      p8Expect(selected.control_score === 0.5 && selected.treatment_score === 1, '配对评分不符');
+      p8Expect(selected.champion_record && fixtureLedger.entries().some(entry =>
+        entry.kind === 'evolve-champion' && entry.candidate === 'p8-keep'), 'champion 未落 Ledger');
+      return 'decision=kept score=0.5→1 record=' + selected.champion_record;
+    });
+
+    p8Check('P8 verifyArchive + champion：kept 谱系与收据一致', () => {
+      const verified = p8Main.verifyArchive();
+      const champion = p8Main.champion();
+      p8Expect(verified.ok && verified.checked >= 3 && verified.drifted.length === 0, JSON.stringify(verified));
+      p8Expect(champion?.candidate === 'p8-keep' && champion.gen === 1, JSON.stringify(champion));
+      return 'checked=' + verified.checked + ' champion=' + champion.candidate + '@gen' + champion.gen;
+    });
+
+    p8Check('P8 第二候选 apply：从 champion 父本派生 gen2', () => {
+      const styleOnly = '# P8 fixture\n\nBase guidance, style-only rewrite.\n';
+      applied = p8Main.applyProposal(p8WriteProposal('p8-revert', p8SkillRel, styleOnly));
+      p8Expect(applied?.status === 'applied' && applied.gen === 2, JSON.stringify(applied));
+      p8Expect(readFileSync(join(p8Root, p8SkillRel), 'utf8') === styleOnly, 'gen2 候选未落盘');
+      return 'gen=2 candidate=' + applied.candidate;
+    });
+
+    p8Check('P8 select revert：恢复 champion 字节且 champion 不后退', () => {
+      p8WriteVerdicts(applied, true, false);
+      const selected = p8Main.select();
+      p8Expect(selected.decision === 'reverted' && selected.gen === 2, JSON.stringify(selected));
+      p8Expect(readFileSync(join(p8Root, p8SkillRel), 'utf8') === p8Kept, 'revert 未恢复父本原字节');
+      p8Expect(selected.champion?.candidate === 'p8-keep' && selected.champion.gen === 1,
+        'revert 后 champion 漂移');
+      return 'decision=reverted restored=' + selected.champion.candidate + '@gen1';
+    });
+
+    p8Check('P8 三禁 init：include ** 也不能覆盖隐式排除', () => {
+      p8Forbidden = new Evolver(p8Root, 'p8-forbidden');
+      const contract = p8Forbidden.init({ surface: '**', evalsDir: p8EvalsRel });
+      p8Expect(contract.evaluator_id === p8Main.contract().evaluator_id, '同 fixture evaluator 指纹不一致');
+      return 'surface=** evaluator=' + contract.evaluator_id.slice(0, 12);
+    });
+
+    const p8ApplyForbidden = (id, file) => {
+      const before = readFileSync(join(p8Root, p8SkillRel), 'utf8');
+      const outcome = p8Forbidden.applyProposal(p8WriteProposal(id, file, 'forbidden mutation\n'));
+      p8Expect(outcome?.status === 'invalid' && outcome.code === 'EVOLVE_SURFACE_EXCLUDED', JSON.stringify(outcome));
+      p8Expect(outcome.candidate === id && p8Forbidden.contract().gen === 0, 'invalid 候选或 gen 记账不符');
+      p8Expect(readFileSync(join(p8Root, p8SkillRel), 'utf8') === before, 'invalid 改动了 genome');
+      p8Expect(p8Forbidden.log().some(event => event.event === 'invalid' && event.candidate === id &&
+        event.code === 'EVOLVE_SURFACE_EXCLUDED'), 'invalid 未入谱系');
+      return outcome.code + ' ' + file;
+    };
+    p8Check('P8 三禁① 评估资产 invalid（evals/**）',
+      () => p8ApplyForbidden('p8-ban-evals', p8EvalsRel + '/rubric.md'));
+    p8Check('P8 三禁② ledger invalid（.research/**）',
+      () => p8ApplyForbidden('p8-ban-ledger', '.research/ledger.jsonl'));
+    p8Check('P8 三禁③ 插件代码 invalid（lib/**）',
+      () => p8ApplyForbidden('p8-ban-code', 'lib/evolve.js'));
+
+    p8Check('P8 evaluator 指纹漂移 invalid 且不写候选', () => {
+      const before = readFileSync(join(p8Root, p8SkillRel), 'utf8');
+      let outcome;
+      try {
+        writeFileSync(join(p8Root, 'lib', 'evolve.js'), p8FixtureLib + '// external drift\n', 'utf8');
+        outcome = p8Main.applyProposal(p8WriteProposal('p8-drift', p8SkillRel, p8Kept + '\nDrift attempt.\n'));
+        p8Expect(outcome?.status === 'invalid' && outcome.code === 'EVOLVE_EVALUATOR_DRIFT', JSON.stringify(outcome));
+        p8Expect(readFileSync(join(p8Root, p8SkillRel), 'utf8') === before, '指纹漂移后候选被写入');
+      } finally {
+        writeFileSync(join(p8Root, 'lib', 'evolve.js'), p8FixtureLib, 'utf8');
+      }
+      return outcome.code + ' genome=unchanged';
+    });
+
+    p8Check('P8 终态 verify/champion：三禁 invalid 全留痕且收据可验', () => {
+      const mainVerified = p8Main.verifyArchive();
+      const forbiddenVerified = p8Forbidden.verifyArchive();
+      const invalid = p8Forbidden.log().filter(event => event.event === 'invalid');
+      p8Expect(mainVerified.ok && forbiddenVerified.ok, JSON.stringify({ mainVerified, forbiddenVerified }));
+      p8Expect(invalid.length === 3 && ['p8-ban-evals', 'p8-ban-ledger', 'p8-ban-code'].every(id =>
+        invalid.some(event => event.candidate === id)), '三禁 invalid 谱系不完整');
+      p8Expect(p8Main.log().some(event => event.event === 'invalid' && event.candidate === 'p8-drift' &&
+        event.code === 'EVOLVE_EVALUATOR_DRIFT'), '指纹漂移 invalid 未留痕');
+      p8Expect(p8Main.champion()?.candidate === 'p8-keep' && p8Main.champion()?.gen === 1, '终态 champion 不符');
+      return 'main=' + mainVerified.checked + ' forbidden=' + forbiddenVerified.checked + ' invalid=3+drift';
+    });
+  } catch (error) {
+    step('P8 fixture 流程异常', false, String(error?.message ?? error).slice(0, 240));
+  } finally {
+    if (p8Root) {
+      try {
+        rmSync(p8Root, { recursive: true, force: true });
+        step('P8 独立临时 fixture 已清理（发布树无残留）', !existsSync(p8Root), p8Root);
+      } catch (error) {
+        step('P8 独立临时 fixture 已清理（发布树无残留）', false, String(error?.message ?? error).slice(0, 240));
+      }
+    }
+  }
+
   // ---- verdict ----
   const fails = results.filter(r => !r.pass);
   console.log('\n===== harness-lab 验收: ' + (results.length - fails.length) + '/' + results.length + ' =====');
   if (fails.length) { console.log('FAILED: ' + fails.map(f => f.name).join(' ; ')); process.exitCode = 1; }
 } finally {
-  try { await ctx.fiber.dispose(); } catch {}
+  try { await ctx?.fiber.dispose(); } catch {}
+  lab.cleanup();
 }
