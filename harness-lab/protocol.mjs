@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Ledger } from '../lib/ledger.js';
 import { Evolver } from '../lib/evolve.js';
+import { createVerifier } from '../lib/verifier.js';
 import { createHarnessLab, REPO_ROOT } from './runtime.mjs';
 
 const PKG_VERSION = JSON.parse(readFileSync(join(REPO_ROOT, 'package.json'), 'utf8')).version;
@@ -326,6 +327,41 @@ try {
         step('P8 独立临时 fixture 已清理（发布树无残留）', false, String(error?.message ?? error).slice(0, 240));
       }
     }
+  }
+
+  // ---- P9: v0.7.0 P0 加固（真实 exec.arguments + 工作区解耦 + verifyAsync）----
+  const p9Ws = mkdtempSync(join(tmpdir(), 'dsh-research-harness-p9-'));
+  try {
+    const p9Pass = ctx.tools.checkGuards({
+      name: 'write',
+      cwd: p9Ws,
+      arguments: { filePath: join(p9Ws, 'note.md') },
+    });
+    const p9DenyOutside = ctx.tools.checkGuards({
+      name: 'write',
+      cwd: p9Ws,
+      arguments: { filePath: join(LEDGER_DIR, 'escape.md') },
+    });
+    const p9DenyArg = ctx.tools.checkGuards({
+      name: 'findings.record',
+      arguments: { entries: [{ claim: 'exec.arguments 无来源', confidence: 'observed' }] },
+    });
+    step('P9 真实 DSH exec.arguments + 工作区/台账解耦守卫',
+      p9Pass === undefined &&
+      String(p9DenyOutside?.info?.code ?? '') === 'WRITE_OUTSIDE_WORKSPACE' &&
+      String(p9DenyArg?.info?.code ?? '') === 'EVIDENCE_NO_PROVENANCE',
+      'wsAllow=' + String(p9Pass) + ' outside=' + p9DenyOutside?.info?.code + ' argGate=' + p9DenyArg?.info?.code);
+
+    const vAsync = createVerifier({
+      kind: 'command',
+      command: [process.execPath, '-e', 'console.log(JSON.stringify({ pass: true }))'],
+    });
+    const p9Cmd = await vAsync.verifyAsync(new Ledger(LEDGER_DIR));
+    step('P9 verifier(command) verifyAsync 安全执行与 JSON 协议',
+      p9Cmd.pass === true && p9Cmd.exitCode === 0,
+      JSON.stringify(p9Cmd));
+  } finally {
+    rmSync(p9Ws, { recursive: true, force: true });
   }
 
   // ---- verdict ----

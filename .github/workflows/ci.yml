@@ -74,6 +74,7 @@ jobs:
             'evals/skills/validate-data/rubric.md',
             'test/contract.test.mjs',
             'test/v060.test.mjs',
+            'test/v070.test.mjs',
             'harness-lab/README.md',
             'harness-lab/lab.mjs',
             'harness-lab/protocol.mjs',
@@ -113,6 +114,12 @@ jobs:
           for (const file of report.files) {
             if (legacyBrand.test(file.path) || file.path.includes('__pycache__')) {
               throw new Error('Forbidden path in pack: ' + file.path);
+            }
+            if (/^skills\/[^/]+\/SKILL\.md$/.test(file.path)) {
+              const skillText = readFileSync(file.path, 'utf8');
+              if (skillText.length > 8192) {
+                throw new Error('SKILL.md exceeds 8192 chars: ' + file.path + ' (' + skillText.length + ')');
+              }
             }
             if (!textExtensions.has(extname(file.path)) && file.path !== 'LICENSE') continue;
             const text = readFileSync(file.path, 'utf8');

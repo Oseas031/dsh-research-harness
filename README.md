@@ -2,16 +2,19 @@
 
 面向 DSH 的科研工作台：把证据守卫、追加式台账、完成门禁、最短路径路由和 10 个科研技能装进独立「科研 Harness」预设。**技能是库存，证据契约是产品。**
 
-当前仓库版本：**v0.6.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
+当前仓库版本：**v0.7.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
 
-## v0.6.0 能做什么
+## v0.7.0 能做什么
 
+- **工作区守卫解耦**：基于 DSH 真实 `exec.arguments` 与 `WorkingDirectoryService` 校验 `write`/`edit`/`apply_patch` 越界，不再把 `ledgerRoot` 误当作工作区；`read` 自动检测磁盘文件大小并拦截 >20MB 文本与二进制文件。
+- **多项目分账与并发锁**：默认按工作区自动隔离台账（`~/.dsh/research-harness/projects/<slug-hash>/`），写入经跨进程 `wx` 排他锁保障 `seq` 单调且收据严格对齐。
+- **安全异步命令校验器**：`verifier(command)` 强制 `shell: false`、argv 数组传参、环境变量白名单、拒绝 shell 元字符与 `verifyAsync()` 进程树超时回收；CLI 新增 `verify-cmd`。
 - **证据入账**：研究发现必须带 `provenance` 与 `confidence`（`observed` / `inferred` / `unknown`），支持 `task` 标签和 `verifiedBy`（`agent-reported` / `lead-verified`）验证状态；并提供 `findings.unknown` 与 `findings.resolve` 对齐 CLI 的完整 unknown/challenge 工具链。
 - **完成门禁**：未决 blocker 阻止直接 `complete`；软门禁跳过必须留下原因、风险与补偿动作。
 - **最短路径路由**：`route` 与插件工具 `findings.route` 统一支持 `acceptance` 充分性规格，给出 `record-findings`、`resolve-blockers`、`continue-recording`、`run-acceptance` 或 `BLOCKED`，并同步落 `route-check` 检查点。
 - **证据收据**：机制写入台账时同步写 SHA-256 收据；`verify` 可发现改行、删行和缺失收据。
 - **报告入账与复验**：把报告中的 `findings` 代码块结构化导入，区分 `agent-reported` 与 `lead-verified`。
-- **全技能评估与进化闭环**：为全部 10 个内置科研技能配备冻结行为评估矩阵（`evals/skills/`），生成随机 A/B 配对评审包，依据 verdict 选择 keep/revert，并保存进化谱系、回滚副本、archive 收据和 champion 记录。
+- **全技能评估与进化闭环**：为全部 10 个内置科研技能配备冻结行为评估矩阵（`evals/skills/`）及 `SKILL.md <= 8192` 字符红线，支持随机 A/B 配对评审、keep/revert 与回滚保护。
 - **端到端产物流水线**：内置 `harness-lab/scenarios/pipeline-e2e.mjs`（`npm run test:e2e`），在真实 `cordis` 上下文串通 实验 CSV → `sci-figure` 300dpi 出图 → `latex-paper-en` PDF 编译 → 9 工具证据闭环。
 - **任务级验收计数**：`acceptance.task` 将 `minFindings` 与 `minObservedRatio` 的统计限定到当前 `REQ-xxxx` / `TASK-xxxx`，便于共享台账。
 
@@ -26,22 +29,22 @@
 
 ### npm
 
-把 v0.6.0 安装进 DSH 的 `web` profile（使用其他 profile 时替换名称）：
+把 v0.7.0 安装进 DSH 的 `web` profile（使用其他 profile 时替换名称）：
 
 ```bash
-dsh plugin --profile web add dsh-research-harness@0.6.0
+dsh plugin --profile web add dsh-research-harness@0.7.0
 ```
 
 只需要独立 CLI 时，也可以全局安装：
 
 ```bash
-npm install -g dsh-research-harness@0.6.0
+npm install -g dsh-research-harness@0.7.0
 ```
 
 ### GitHub
 
 ```bash
-dsh plugin --profile web add github:Oseas031/dsh-research-harness#v0.6.0
+dsh plugin --profile web add github:Oseas031/dsh-research-harness#v0.7.0
 ```
 
 也可以从源码安装 CLI：

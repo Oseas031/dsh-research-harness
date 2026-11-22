@@ -1,6 +1,6 @@
 # dsh-research-harness — 当前机制与文件契约
 
-> **当前版本：v0.6.0。本文件是机制、目录与数据契约的真相源。**
+> **当前版本：v0.7.0。本文件是机制、目录与数据契约的真相源。**
 > 新用户安装与 Quickstart 见 [根 README](../README.md)；版本变化见 [CHANGELOG](../CHANGELOG.md)。
 
 dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：**技能是库存，证据契约是产品。**
@@ -90,11 +90,11 @@ init 冻结契约与 evaluator_id
 
 | 上下文 | 默认根目录 | 覆盖规则 |
 |---|---|---|
-| DSH 插件 | `~/.dsh/research-harness/` | 显式 `ledgerRoot` 优先；无法取得 `ctx.dshHomePath` 时回退 `./.research` |
+| DSH 插件 | `~/.dsh/research-harness/projects/<slug-hash>/`（按工作区自动分账，附 `workspace.json`） | `projectScope: 'global'` 回退 `~/.dsh/research-harness/`；显式 `ledgerRoot` 最高优先 |
 | CLI | 当前工作目录的 `./.research` | `--ledger DIR` > `RESEARCH_LEDGER` > 默认值 |
 | 进化实验 | `<root>/.evolve/<name>/` | `--root DIR`；缺省为 CLI 所在包根目录 |
 
-Ledger 根目录包含 `ledger.jsonl`、`ledger-receipts.jsonl` 与 `guard-log.jsonl`。进化目录包含 `contract.json`、`archive.jsonl`、`archive-receipts.jsonl`、`gens/`、`packets/`、`verdicts/`、`backups/`。
+Ledger 根目录包含 `ledger.jsonl`、`ledger-receipts.jsonl`、`guard-log.jsonl` 与跨进程写入锁 `.ledger.lock`（自动回收僵尸锁）。进化目录包含 `contract.json`、`archive.jsonl`、`archive-receipts.jsonl`、`gens/`、`packets/`、`verdicts/`、`backups/`。
 
 ## clusterScale
 

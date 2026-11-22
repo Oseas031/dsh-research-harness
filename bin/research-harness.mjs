@@ -10,6 +10,7 @@ import { Ledger } from '../lib/ledger.js';
 import { route } from '../lib/route.js';
 import { verifyLedger } from '../lib/receipts.js';
 import { ingestReport, markVerified } from '../lib/ingest.js';
+import { createVerifier } from '../lib/verifier.js';
 
 const USAGE = `用法: research-harness <command> [flags]
 命令:
@@ -20,6 +21,7 @@ const USAGE = `用法: research-harness <command> [flags]
   gate-skip --gate G --reason R --risk R --compensation C [--covers U1,U2]
   route [--scale solo|delegate|cluster] [--acceptance acceptance.json]
   verify                                  收据核对（drifted 时 exit 1）
+  verify-cmd --cmd <json数组或安全命令> [--timeout <ms>]   异步运行外部命令校验器
   status                                  台账统计 + 未决 blocker
   ingest --file report.md --source SRC [--task TASK-0000]
   mark-verified --id E5 [--note ...]
@@ -95,6 +97,16 @@ try {
     case 'verify': {
       const v = verifyLedger(led.file);
       out(v); if (!v.ok) process.exit(1); break;
+    }
+    case 'verify-cmd': {
+      const rawCmd = need('cmd').trim();
+      const command = rawCmd.startsWith('[') ? JSON.parse(rawCmd) : rawCmd;
+      const timeoutMs = flags.timeout ? Number(flags.timeout) : undefined;
+      const v = createVerifier({ kind: 'command', command, ...(Number.isFinite(timeoutMs) ? { timeoutMs } : {}) });
+      const res = await v.verifyAsync(led);
+      out(res);
+      if (!res.pass) process.exit(1);
+      break;
     }
     case 'status': {
       const stats = led.stats();

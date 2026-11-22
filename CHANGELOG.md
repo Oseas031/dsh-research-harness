@@ -2,6 +2,25 @@
 
 本文件记录仓库版本变化。版本号本身不表示 npm 发布或远端 CI 状态；二者以各自的实际记录为准。
 
+## [0.7.0]
+
+### Added
+
+- `lib/ledger.js` 新增跨进程排他写入锁 `withLock()`（`wx` 原子建锁 + 僵尸锁自动回收），保证并发写账时 `seq` 单调不冲突、台账与 SHA-256 收据严格对齐。
+- `lib/index.js` 新增 `resolveWorkspaceRoot()`、`workspaceSlug()` 与 `resolveLedgerDir()`：默认按会话工作区路径隔离台账（`~/.dsh/research-harness/projects/<slug-hash>/` + `workspace.json`），支持 `projectScope: 'global'` 与显式 `ledgerRoot` 覆盖。
+- `lib/guards.js` 新增 `extractPatchPaths()`，支持检查 DSH `apply_patch`（`patchText`）中所有增/改/删/重命名目标路径。
+- `lib/verifier.js` 新增 `parseCommandSpec()` 与异步 `verifyAsync()`；CLI 新增 `verify-cmd` 子命令。
+- 新增 `test/v070.test.mjs`，覆盖四大 P0 生产级加固及 CI 中全 10 个 `SKILL.md <= 8192` 字符红线门禁。
+
+### Changed
+
+- `lib/verifier.js` 移除 `shell: true`：拒绝含 shell 注入元字符（`VERIFIER_UNSAFE_COMMAND`），强制 `shell: false`、argv 数组传参、宿主敏感环境变量隔离，以及同步/异步分档超时上限与进程树回收。
+- `skills/validate-data/SKILL.md` 修复未闭合代码围栏并将冗余模板下沉至 `references/`，正文压回 `7073` 字符（低于 8192 上限，完整保留全部进化评估规则）。
+
+### Fixed
+
+- 修复 `lib/index.js` 原将 `ledgerRoot` 误当作 `workspaceRoot` 传入路径守卫、以及未优先读取 DSH 真实 `exec.arguments` 的问题；`lib/guards.js` 修复相对路径按 `process.cwd()` 而非 `workspaceRoot` 解析的问题、补齐驼峰 `filePath` 识别及 `read` 磁盘真实大小 `statSync` 检测。
+
 ## [0.6.0]
 
 ### Added
