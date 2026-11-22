@@ -9,7 +9,7 @@
 运行候选检查后，仍须按本指南核对原始图表、实验协议和方法定义：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py thesis.tex --results-analysis
+python3 <skill-dir>/scripts/analyze_experiment.py thesis.tex --results-analysis
 ```
 
 `RA-*` 只提供启发式线索，不等同于本指南 `R-*` 清单的覆盖实现。脚本命中不能证明正文

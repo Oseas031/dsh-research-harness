@@ -3,9 +3,9 @@
 Terminology Consistency Checker - Check term usage consistency in thesis
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --terms
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --abbreviations
+    python3 <skill-dir>/scripts/check_consistency.py main.tex
+    python3 <skill-dir>/scripts/check_consistency.py main.tex --terms
+    python3 <skill-dir>/scripts/check_consistency.py main.tex --abbreviations
 """
 
 from __future__ import annotations

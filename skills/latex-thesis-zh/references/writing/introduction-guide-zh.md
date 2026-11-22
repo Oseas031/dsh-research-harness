@@ -3,8 +3,8 @@
 面向中文博士/硕士学位论文的绪论写作与诊断。诊断入口：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_literature.py main.tex --intro-citations --bib refs.bib
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --intro-mainline
+python3 <skill-dir>/scripts/analyze_literature.py main.tex --intro-citations --bib refs.bib
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --intro-mainline
 ```
 
 > 本文所有阈值为多校规范与写作实践的常见口径（出处见各节），**最终以本校研究生院最新

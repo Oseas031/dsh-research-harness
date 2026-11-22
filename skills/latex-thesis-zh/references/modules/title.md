@@ -35,7 +35,7 @@ Conventional chapters such as 绪论、相关工作、文献综述、总结与�
 Example command:
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/optimize_title.py main.tex --check --headings
+python3 <skill-dir>/scripts/optimize_title.py main.tex --check --headings
 ```
 
 ## Words to Remove

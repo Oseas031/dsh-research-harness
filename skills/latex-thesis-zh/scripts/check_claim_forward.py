@@ -11,8 +11,8 @@
 与 EN 副本同码同格式，实现独立（中文断句、主语门控、引用命令集合不同）。
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_claim_forward.py main.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_claim_forward.py main.tex --section conclusion --json
+    python3 <skill-dir>/scripts/check_claim_forward.py main.tex
+    python3 <skill-dir>/scripts/check_claim_forward.py main.tex --section conclusion --json
 """
 
 from __future__ import annotations

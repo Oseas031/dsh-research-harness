@@ -9,10 +9,10 @@
 ## 命令
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --section 绪论
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --goal concision --strength moderate
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --max-chars 70 --json
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --section 绪论
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --goal concision --strength moderate
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --max-chars 70 --json
 ```
 
 `--goal`（默认 `grammar`）与 `--strength`（默认 `minimal`）声明编辑范围，见 [routing-rules.md](routing-rules.md)。`--goal coherence` 在本模块无规则，会路由到 `logic`。`--tier` 与二者无关，它是 `deai` 的检测灵敏度。
@@ -102,7 +102,7 @@ B 档（无「建议」行，只有「候选」）：
 在该模式下，`E-ABSOLUTE` 对 `绝对` 只跳过这些合法搭配中的词位：`绝对误差`、`绝对值`、`绝对温度`、`绝对湿度`、`绝对压力`、`绝对坐标`。一处合法搭配不豁免同一句中的另一个绝对化词。`完全忽略` 只产生一条 `E-ABSOLUTE` 的 `完全` 候选。引述他人观点的既有排除仍然有效。不新增自动替换模板。
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --degree-wording
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --degree-wording
 ```
 
 ## 可选学院数字体例
@@ -114,5 +114,5 @@ python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh
 不传 `--school` 时原输出不变。判据见 [number-unit-guide-zh.md](../formatting/number-unit-guide-zh.md)。
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --school yanshan-ee-2025
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --school yanshan-ee-2025
 ```

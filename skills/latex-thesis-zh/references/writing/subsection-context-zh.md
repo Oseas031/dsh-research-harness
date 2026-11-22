@@ -39,9 +39,9 @@
 ## 命令与窗口
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --subsection-context
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --subsection-context --subsection 2.1.1
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --emit-window --subsection 2.1.1
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --subsection-context
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --subsection-context --subsection 2.1.1
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --emit-window --subsection 2.1.1
 ```
 
 `--emit-window` 只打印部件名、源文件、文件内行号和可改/只读标记，不复制正文。多文件论文先

@@ -42,7 +42,7 @@ The manifest is strict JSON. You create it once with empty `history`/`annotation
 Your entry script must save the figure to the path in the **`FIGURE_OUT`** env var (PNG; extra artifacts saved next to `$FIGURE_OUT` — e.g. SVG/PDF when the user wants vector output — are archived with the version). Then render:
 
 ```bash
-python3 E:/dsh-research-harness/skills/sci-figure/render.py <bundle>/<slug>.figure \
+python <skill-dir>/render.py <bundle>/<slug>.figure \
     [--note "one-line summary of what changed"] \
     [--resolve a1,a2]          # annotation ids this render addresses
 ```
@@ -58,7 +58,7 @@ If the host is missing a plotting package (e.g. matplotlib on the user's own mac
 
 ## Delivering
 
-Deliver the **manifest** with the standard delivery tool (`the `present` tool (host file delivery)`, see *Delivering files* in your system prompt) — path = the `.figure` manifest. Everything else in a bundle is internal — if the user asks for the raw PNG/SVG as a file, copy it out of the bundle under a descriptive name and deliver that copy. Deliver the manifest once, after the first successful render; later renders update the user's open review board live, so **do not re-send the manifest after revisions** — just say in chat what changed.
+Deliver the **manifest** with the standard delivery tool (`present` tool / host file delivery, see *Delivering files* in your system prompt) — path = the `.figure` manifest. Everything else in a bundle is internal — if the user asks for the raw PNG/SVG as a file, copy it out of the bundle under a descriptive name and deliver that copy. Deliver the manifest once, after the first successful render; later renders update the user's open review board live, so **do not re-send the manifest after revisions** — just say in chat what changed.
 
 ## Revising from annotations
 

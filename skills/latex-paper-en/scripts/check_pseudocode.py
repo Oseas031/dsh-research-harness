@@ -7,9 +7,9 @@ This checker distinguishes:
 - IEEE-safe defaults that are recommended but not mandatory
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_pseudocode.py main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_pseudocode.py main.tex --venue ieee
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_pseudocode.py main.tex --json
+    python3 -B <skill-dir>/scripts/check_pseudocode.py main.tex
+    python3 -B <skill-dir>/scripts/check_pseudocode.py main.tex --venue ieee
+    python3 -B <skill-dir>/scripts/check_pseudocode.py main.tex --json
 """
 
 from __future__ import annotations

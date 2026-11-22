@@ -5,8 +5,8 @@
 ## 1. 定位与读取
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --plan
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --plan --unit 1.1.1
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --plan
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --plan --unit 1.1.1
 ```
 
 按清单源文件行区间读取当前小节与只读邻域。假设当前小节原文如下；邻域不放进稿件。
@@ -44,7 +44,7 @@ python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py
 将润色稿保存为临时文件，再运行：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --verify --unit 1.1.1 --revised revised.tex
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --verify --unit 1.1.1 --revised revised.tex
 ```
 
 预期为 `PASS-SCRIPT`，仍需语义核对。实际交付附运行命令、退出码与命中数，未运行不得声称通过。把 0.12 改成 0.10 会触发 `UP-NUM` 并阻塞；把“可能支持”改成“证明”会产生 `UP-STRENGTH` 候选；删除引用键会触发 `UP-CITE`。原有标题原样保留不触发 `UP-SCOPE`，新增标题或复制只读邻域首句则需修正后重新核对。

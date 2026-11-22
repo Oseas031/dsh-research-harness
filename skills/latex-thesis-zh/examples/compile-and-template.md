@@ -9,8 +9,8 @@
 
 命令：
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/detect_template.py main.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex
+python3 <skill-dir>/scripts/detect_template.py main.tex
+python3 <skill-dir>/scripts/compile.py main.tex
 ```
 
 预期输出：

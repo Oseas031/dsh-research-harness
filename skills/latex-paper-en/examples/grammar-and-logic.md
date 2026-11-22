@@ -10,9 +10,9 @@ Recommended module sequence:
 
 Commands:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_grammar.py main.tex --section introduction
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_sentences.py main.tex --section related
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --section related
+python3 -B <skill-dir>/scripts/analyze_grammar.py main.tex --section introduction
+python3 -B <skill-dir>/scripts/analyze_sentences.py main.tex --section related
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --section related
 ```
 
 Expected output:

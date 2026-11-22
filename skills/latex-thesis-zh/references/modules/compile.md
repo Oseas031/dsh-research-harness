@@ -7,9 +7,9 @@ Purpose: Diagnose and fix compilation issues in Chinese LaTeX thesis projects.
 Run compilation through the bundled wrapper and use the project's actual entry file and bibliography backend:
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe latexmk
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-bibtex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-biber
+python3 <skill-dir>/scripts/compile.py main.tex --recipe latexmk
+python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-bibtex
+python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-biber
 ```
 
 The wrapper also supports LuaLaTeX recipes. Detect the project before choosing; `main.tex`, XeLaTeX, and one
@@ -20,8 +20,8 @@ an instruction to bypass the wrapper. Do not clean an existing PDF, install a mi
 ## Output Directory and Success
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe latexmk --outdir build
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --compiler lualatex --outdir "build output"
+python3 <skill-dir>/scripts/compile.py main.tex --recipe latexmk --outdir build
+python3 <skill-dir>/scripts/compile.py main.tex --compiler lualatex --outdir "build output"
 ```
 
 Without `--outdir`, the target PDF is beside the source entry. A relative output directory is resolved against

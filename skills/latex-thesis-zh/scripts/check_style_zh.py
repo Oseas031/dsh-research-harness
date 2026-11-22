@@ -14,10 +14,10 @@ references/formatting/number-unit-guide-zh.md。九个检查器 E-* 的分档、
   - 段落顺序与论证 → logic
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --section 绪论
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --goal concision --strength moderate
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --json
+    python3 -B <skill-dir>/scripts/check_style_zh.py main.tex
+    python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --section 绪论
+    python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --goal concision --strength moderate
+    python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --json
 """
 
 from __future__ import annotations

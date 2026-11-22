@@ -88,7 +88,7 @@
 # 逐方法章实验检查 (--per-chapter)
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py thesis.tex --per-chapter
+python3 <skill-dir>/scripts/analyze_experiment.py thesis.tex --per-chapter
 ```
 
 工业/过程背景学位论文常为"综述在绪论 + 无独立讨论章 + 实验分散在各方法章"结构：此时
@@ -115,7 +115,7 @@ B3/B4 的全局 `discussion`/`related` 节不存在，默认模式会输出一�
 # 结果分析深度检查 (--results-analysis)
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py thesis.tex --results-analysis
+python3 <skill-dir>/scripts/analyze_experiment.py thesis.tex --results-analysis
 ```
 
 该模式定位结果与讨论区间中的高风险写作线索，不替代图表、实验协议和方法定义的语义复核。
@@ -139,8 +139,8 @@ python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experimen
 # 跨表面数字候选 (--cross-surface)
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py thesis.tex --cross-surface
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py thesis.tex --cross-surface --cross-surface-terms terms.json
+python3 <skill-dir>/scripts/analyze_experiment.py thesis.tex --cross-surface
+python3 <skill-dir>/scripts/analyze_experiment.py thesis.tex --cross-surface --cross-surface-terms terms.json
 ```
 
 `--cross-surface-terms` 只能与 `--cross-surface` 同时使用。JSON 只含 `metrics` 和 `eval_sets`。

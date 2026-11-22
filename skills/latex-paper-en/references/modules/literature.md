@@ -5,7 +5,7 @@
 **Purpose**: Diagnose whether the literature review is doing analytical work rather than listing papers, then provide a safe rewrite blueprint.
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_literature.py main.tex --section related
+python3 -B <skill-dir>/scripts/analyze_literature.py main.tex --section related
 ```
 
 ## What This Module Checks

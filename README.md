@@ -2,16 +2,17 @@
 
 面向 DSH 的科研工作台：把证据守卫、追加式台账、完成门禁、最短路径路由和 10 个科研技能装进独立「科研 Harness」预设。**技能是库存，证据契约是产品。**
 
-当前仓库版本：**v0.5.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
+当前仓库版本：**v0.6.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
 
-## v0.5.0 能做什么
+## v0.6.0 能做什么
 
-- **证据入账**：研究发现必须带 `provenance` 与 `confidence`（`observed` / `inferred` / `unknown`），支持 `task` 标签和验证状态。
+- **证据入账**：研究发现必须带 `provenance` 与 `confidence`（`observed` / `inferred` / `unknown`），支持 `task` 标签和 `verifiedBy`（`agent-reported` / `lead-verified`）验证状态；并提供 `findings.unknown` 与 `findings.resolve` 对齐 CLI 的完整 unknown/challenge 工具链。
 - **完成门禁**：未决 blocker 阻止直接 `complete`；软门禁跳过必须留下原因、风险与补偿动作。
-- **最短路径路由**：`route` 根据台账给出 `record-findings`、`resolve-blockers`、`continue-recording`、`run-acceptance` 或 `BLOCKED`，并落 `route-check` 检查点。
+- **最短路径路由**：`route` 与插件工具 `findings.route` 统一支持 `acceptance` 充分性规格，给出 `record-findings`、`resolve-blockers`、`continue-recording`、`run-acceptance` 或 `BLOCKED`，并同步落 `route-check` 检查点。
 - **证据收据**：机制写入台账时同步写 SHA-256 收据；`verify` 可发现改行、删行和缺失收据。
 - **报告入账与复验**：把报告中的 `findings` 代码块结构化导入，区分 `agent-reported` 与 `lead-verified`。
-- **技能进化闭环**：冻结评估资产，生成随机 A/B 配对评审包，依据 verdict 选择 keep/revert，并保存进化谱系、回滚副本、archive 收据和 champion 记录。
+- **全技能评估与进化闭环**：为全部 10 个内置科研技能配备冻结行为评估矩阵（`evals/skills/`），生成随机 A/B 配对评审包，依据 verdict 选择 keep/revert，并保存进化谱系、回滚副本、archive 收据和 champion 记录。
+- **端到端产物流水线**：内置 `harness-lab/scenarios/pipeline-e2e.mjs`（`npm run test:e2e`），在真实 `cordis` 上下文串通 实验 CSV → `sci-figure` 300dpi 出图 → `latex-paper-en` PDF 编译 → 9 工具证据闭环。
 - **任务级验收计数**：`acceptance.task` 将 `minFindings` 与 `minObservedRatio` 的统计限定到当前 `REQ-xxxx` / `TASK-xxxx`，便于共享台账。
 
 ## 环境与实测边界
@@ -25,22 +26,22 @@
 
 ### npm
 
-把 v0.5.0 安装进 DSH 的 `web` profile（使用其他 profile 时替换名称）：
+把 v0.6.0 安装进 DSH 的 `web` profile（使用其他 profile 时替换名称）：
 
 ```bash
-dsh plugin --profile web add dsh-research-harness@0.5.0
+dsh plugin --profile web add dsh-research-harness@0.6.0
 ```
 
 只需要独立 CLI 时，也可以全局安装：
 
 ```bash
-npm install -g dsh-research-harness@0.5.0
+npm install -g dsh-research-harness@0.6.0
 ```
 
 ### GitHub
 
 ```bash
-dsh plugin --profile web add github:Oseas031/dsh-research-harness#v0.5.0
+dsh plugin --profile web add github:Oseas031/dsh-research-harness#v0.6.0
 ```
 
 也可以从源码安装 CLI：
@@ -54,7 +55,7 @@ npm link
 
 `dsh plugin add` 会把包安装进指定 profile，并处理包声明的 `dsh.bundle` patch。**安装、更新或修改预设组合后，完全退出并重启 DSH**，再选择「科研 Harness」。只使用独立 CLI 时不需要重启 DSH。
 
-重启后检查 `findings.record`、`findings.status`、`findings.route`、`findings.verify` 是否可用，并确认技能 provider 已注册 10 个技能。未全局安装 CLI 时，可在仓库根目录把下文中的 `research-harness` 换成 `node bin/research-harness.mjs`。
+重启后检查 `findings.record`、`findings.status`、`findings.unknown`、`findings.resolve`、`findings.route`、`findings.verify` 等 9 个工具是否可用，并确认技能 provider 已注册 10 个技能。未全局安装 CLI 时，可在仓库根目录把下文中的 `research-harness` 换成 `node bin/research-harness.mjs`。
 
 ## CLI Quickstart
 
@@ -157,6 +158,7 @@ research-harness evolve champion --name EXP --root .
 - [版本记录](CHANGELOG.md)
 - 测试：`npm test`
 - harness-lab 真实协议：`npm run test:protocol`（需要本机 DSH 安装）
+- 端到端科研流水线：`npm run test:e2e`（需要本机 DSH 安装、Python matplotlib 与 LaTeX 编译器）
 
 ## License
 

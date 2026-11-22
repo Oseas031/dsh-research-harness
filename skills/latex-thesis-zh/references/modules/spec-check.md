@@ -7,7 +7,7 @@ NEEDS-LLM / MODULE / MANUAL 分流，最终汇总为一份逐项符合性报告�
 ## Primary Command
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_spec.py main.tex --template yanshan --degree doctor
+python3 <skill-dir>/scripts/check_spec.py main.tex --template yanshan --degree doctor
 ```
 
 - `--template <id>`：使用 `templates/<id>.md` 的清单（当前带清单的模板：yanshan、thuthesis、

@@ -7,7 +7,7 @@ description: "arXiv-specific search and retrieval with arXiv rate limits: query 
 
 ## Prerequisites
 
--   Run the scripts with the system `python3` by their full path (`E:/dsh-research-harness/skills/literature-search-arxiv/scripts/<script>.py`)
+-   Run the scripts with the system `python3` by their full path (`<skill-dir>/scripts/<script>.py`)
     so outputs land in the user's working directory. They import `polite_http` (per-host rate
     limiting, retries, backoff), which ships inside `scripts/` — nothing to install.
 -   From remote hosts arXiv PDF and source downloads can be slow (roughly 15–50 KB/s, so a
@@ -23,6 +23,8 @@ description: "arXiv-specific search and retrieval with arXiv rate limits: query 
     -   The provided utility scripts handle rate limiting automatically. Always
         use these scripts rather than writing your own curl/python requests.
 -   List the URLs of all papers that were used in producing the output.
+-   **Verify IDs before citing**: Never guess, extrapolate, or cite an arXiv ID from memory. Before referencing any arXiv ID, verify via `search_arxiv.py` (`--id_list` or query metadata) or downloaded HTML/LaTeX/extracted text that the ID matches the paper's actual title and authors.
+-   **No direct binary PDF reads**: Do NOT call standard text `Read` tools directly on downloaded `.pdf` binaries (blocked by harness guards). Prefer `--format html` via `download_paper.py` or LaTeX source via `download_paper_source.py`; if only a PDF is available, extract plain text via a dedicated extraction script (`pdftotext` or a Python PDF parser) before reading.
 
 ## Utility Scripts
 
@@ -31,7 +33,7 @@ description: "arXiv-specific search and retrieval with arXiv rate limits: query 
 Search arXiv and return a clean JSON array of matching papers.
 
 ```bash
-python3 E:/dsh-research-harness/skills/literature-search-arxiv/scripts/search_arxiv.py --query "au:einstein AND ti:relativity" \
+python3 <skill-dir>/scripts/search_arxiv.py --query "au:einstein AND ti:relativity" \
   --max_results 5 2>/dev/null > /tmp/arxiv_search_results.json
 ```
 
@@ -66,7 +68,7 @@ returned.
 Download the full text of a paper to your local workspace for reading.
 
 ```bash
-python3 E:/dsh-research-harness/skills/literature-search-arxiv/scripts/download_paper.py --id 1706.03762 --format pdf --output attention.pdf
+python3 <skill-dir>/scripts/download_paper.py --id 1706.03762 --format pdf --output attention.pdf
 ```
 
 *Options:*
@@ -85,7 +87,7 @@ Download the LaTeX source files of a paper to your local workspace. Note that
 not all papers have source available.
 
 ```bash
-python3 E:/dsh-research-harness/skills/literature-search-arxiv/scripts/download_paper_source.py --id 2010.11645 --output source.tar.gz
+python3 <skill-dir>/scripts/download_paper_source.py --id 2010.11645 --output source.tar.gz
 ```
 
 *Options:*
@@ -110,6 +112,6 @@ python3 E:/dsh-research-harness/skills/literature-search-arxiv/scripts/download_
 ## Workflow
 
 1.  Search for papers using `search_arxiv.py`. Review the JSON summaries.
-2.  If full text is needed, use `download_paper.py` to fetch the PDF or HTML.
-3.  If downloading a PDF, verify the PDF is not empty or corrupted.
-4.  Read the downloaded file using standard file reading tools.
+2.  Verify every candidate arXiv ID against returned metadata (title, authors, summary) or downloaded content before downloading or citing it.
+3.  When full text is needed, prefer HTML (`download_paper.py --format html`) or LaTeX source (`download_paper_source.py`); download PDF only as fallback and verify the file is non-empty.
+4.  Read downloaded HTML or extracted LaTeX files directly; never call standard `Read` on raw `.pdf` binaries — run a dedicated text extraction script (`pdftotext` or a Python PDF extractor) first and read the extracted text.

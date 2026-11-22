@@ -107,7 +107,7 @@ allowed-tools: Read, Glob, Grep, Bash(python3 *)
 1. Parse `$ARGUMENTS`，锁定入口文件并推断模块；缺参数只追问缺失项。
 2. 多模块请求按“路由规则”顺序串行执行，分模块回报；template 与 structure 都不明时先 `template`。
 3. Read the one reference file tied to that module (see "Read next" column).
-4. Run the corresponding script with `python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/<script>.py`.
+4. Run the corresponding script with `python3 <skill-dir>/scripts/<script>.py`.
 5. Return findings as `% Module (L##) [Severity] [Priority]: ...`. Report exact command and exit code on failure.
 
 ## 跨工具执行

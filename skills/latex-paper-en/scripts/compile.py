@@ -8,12 +8,12 @@ Default Behavior:
     of compilation passes. This is the recommended approach for most use cases.
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex                       # Default: latexmk auto
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --compiler xelatex    # Explicit compiler
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex-bibtex  # Traditional BibTeX
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex-biber   # Modern biblatex
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --watch               # Continuous compilation
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --clean               # Clean auxiliary files
+    python3 -B <skill-dir>/scripts/compile.py main.tex                       # Default: latexmk auto
+    python3 -B <skill-dir>/scripts/compile.py main.tex --compiler xelatex    # Explicit compiler
+    python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex-bibtex  # Traditional BibTeX
+    python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex-biber   # Modern biblatex
+    python3 -B <skill-dir>/scripts/compile.py main.tex --watch               # Continuous compilation
+    python3 -B <skill-dir>/scripts/compile.py main.tex --clean               # Clean auxiliary files
 
 Recipes (matching VS Code LaTeX Workshop):
     latexmk          - LaTeXmk auto (DEFAULT - recommended)
@@ -401,12 +401,12 @@ Recipes (matching VS Code LaTeX Workshop):
   lualatex-biber   lualatex -> biber -> lualatex*2
 
 Examples:
-  python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex                        # Default: latexmk auto
-  python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex-bibtex  # Traditional BibTeX
-  python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex-biber   # Modern biblatex
-  python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --biber               # Force detected-compiler biber flow
-  python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --outdir build        # Set output directory (latexmk path)
-  python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --watch                # Watch mode
+  python3 -B <skill-dir>/scripts/compile.py main.tex                        # Default: latexmk auto
+  python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex-bibtex  # Traditional BibTeX
+  python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex-biber   # Modern biblatex
+  python3 -B <skill-dir>/scripts/compile.py main.tex --biber               # Force detected-compiler biber flow
+  python3 -B <skill-dir>/scripts/compile.py main.tex --outdir build        # Set output directory (latexmk path)
+  python3 -B <skill-dir>/scripts/compile.py main.tex --watch                # Watch mode
         """,
     )
     parser.add_argument("tex_file", help="Main .tex file to compile")

@@ -3,10 +3,10 @@
 BibTeX Verification Script - Check bibliography integrity and citation consistency.
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --tex main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --standard gb7714
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --online-check --output verification_needed.json
+    python3 -B <skill-dir>/scripts/verify_bib.py references.bib
+    python3 -B <skill-dir>/scripts/verify_bib.py references.bib --tex main.tex
+    python3 -B <skill-dir>/scripts/verify_bib.py references.bib --standard gb7714
+    python3 -B <skill-dir>/scripts/verify_bib.py references.bib --online-check --output verification_needed.json
 """
 
 from __future__ import annotations

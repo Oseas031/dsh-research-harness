@@ -2,7 +2,7 @@
 """figure bundle renderer — the ONLY writer of figures, versions/ and manifest history.
 
 Usage:
-    python3 E:/dsh-research-harness/skills/sci-figure/render.py <bundle>/<slug>.figure \
+    python <skill-dir>/render.py <bundle>/<slug>.figure \
         [--note "what changed"] [--resolve a1,a2]
 
 Contract (SKILL.md is the source of truth):
@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 CODE_SNAPSHOT_EXCLUDES = {"__pycache__", ".venv", "venv", "node_modules", ".cache"}
-RUNNERS = {".py": ["python3"], ".r": ["Rscript"], ".sh": ["bash"], ".jl": ["julia"]}
+RUNNERS = {".py": [sys.executable], ".r": ["Rscript"], ".sh": ["bash"], ".jl": ["julia"]}
 
 
 def fail(code: int, message: str):

@@ -26,9 +26,9 @@ Self-weakening wording on the authors' own results (`regrettably`, `merely`, `fa
 Protected tokens (statistics, values with units, model/dataset/gene names) are masked before substitution and listed under `Protected:`. Full classification: [protected-tokens.md](../writing/protected-tokens.md).
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/improve_expression.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/improve_expression.py main.tex --section related
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/improve_expression.py main.tex --goal clarity --strength moderate
+python3 -B <skill-dir>/scripts/improve_expression.py main.tex
+python3 -B <skill-dir>/scripts/improve_expression.py main.tex --section related
+python3 -B <skill-dir>/scripts/improve_expression.py main.tex --goal clarity --strength moderate
 ```
 
 `--goal` (default `grammar`) and `--strength` (default `minimal`) declare the edit envelope; see [routing-rules.md](routing-rules.md). `--goal coherence` has no rules here and routes to `logic`.

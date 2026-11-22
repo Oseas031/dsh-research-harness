@@ -3,7 +3,7 @@
 用途：判断相关工作/文献综述是否真正形成了学术对话，而不只是按作者和年份流水账式罗列。
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_literature.py thesis.tex --section related
+python3 -B <skill-dir>/scripts/analyze_literature.py thesis.tex --section related
 ```
 
 ## 核心检查
@@ -18,7 +18,7 @@ python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_litera
 ## 绪论引用诊断（B1~B5，`--intro-citations`）
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_literature.py thesis.tex --intro-citations --bib refs.bib
+python3 -B <skill-dir>/scripts/analyze_literature.py thesis.tex --intro-citations --bib refs.bib
 ```
 
 作用域为绪论章节（未识别出绪论时按整份文件统计并提示）；`--intro-citations` 忽略

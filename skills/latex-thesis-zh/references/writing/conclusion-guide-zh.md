@@ -4,8 +4,8 @@
 的独立章，标题多为"结论""结论与展望""总结与展望"三者之一。诊断入口：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_conclusion.py main.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_conclusion.py main.tex --json
+python3 <skill-dir>/scripts/analyze_conclusion.py main.tex
+python3 <skill-dir>/scripts/analyze_conclusion.py main.tex --json
 ```
 
 > 本文所有规律为 5 篇工业背景博士论文（固废焚烧、水泥烧成、水泥熟料、水泥粉磨、锌冶炼浸出）

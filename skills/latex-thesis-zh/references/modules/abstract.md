@@ -5,12 +5,12 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex                       # thesis 骨架诊断（默认）
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --degree master       # 硕士字数阈值
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --bilingual           # + 中英摘要一致性
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --max-chars 1500      # 覆盖字数上界
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --model five --lang en --max-words 250
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --json
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex                       # thesis 骨架诊断（默认）
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --degree master       # 硕士字数阈值
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --bilingual           # + 中英摘要一致性
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --max-chars 1500      # 覆盖字数上界
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --model five --lang en --max-words 250
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --json
 ```
 
 ## Details

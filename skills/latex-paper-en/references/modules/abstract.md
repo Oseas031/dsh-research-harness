@@ -5,10 +5,10 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py main.tex --lang en --max-words 250
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py main.tex --lang zh --max-chars 300
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py main.tex --json
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --lang en --max-words 250
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --lang zh --max-chars 300
+python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --json
 ```
 
 ## Details

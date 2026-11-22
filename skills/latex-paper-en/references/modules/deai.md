@@ -7,9 +7,9 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --section introduction
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --analyze
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_batch.py main.tex --all-sections
+python3 -B <skill-dir>/scripts/deai_check.py main.tex --section introduction
+python3 -B <skill-dir>/scripts/deai_check.py main.tex --analyze
+python3 -B <skill-dir>/scripts/deai_batch.py main.tex --all-sections
 ```
 
 ## Raw Script Output
@@ -88,7 +88,7 @@ Reference: [guide.md](../deai/guide.md)
 - **labels every finding with its AIGC dimension** D1-D5 and attaches a one-line teaching note (why detectors flag the pattern).
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --analyze --tier heavy
+python3 -B <skill-dir>/scripts/deai_check.py main.tex --analyze --tier heavy
 ```
 
 The five dimensions are readability-oriented, **not** tuned to evade any specific detector: D1 sentence-length variety, D2 paragraph structure, D3 information density, D4 connector frequency, D5 term-context matching. Thresholds (including `sentence_length.cv_threshold`) remain overridable via `references/deai/tone-thresholds.yaml`.

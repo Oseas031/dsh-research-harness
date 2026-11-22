@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "preserve-latex-anchors",
+      "hard": true,
+      "prompt": "用户请执行者润色 `main.tex` 的引言语言表达，执行者为了行文流畅打算顺手重写一段并删改里面的 `\\cite{...}`、`\\ref{...}` 和行内公式宏。",
+      "expect": "默认必须完整保留 `\\cite{}`、`\\ref{}`、`\\label{}`、自定义宏和数学环境，除非用户明确要求修改源码"
+    },
+    {
+      "id": "rewrite-contract-four-fields",
+      "hard": true,
+      "prompt": "执行者使用 `expression` 或 `grammar` 模块给出具体的英文替换文本，同时打算让规则脚本把 `Meaning-Check` 标为 `PRESERVED`。",
+      "expect": "产出替换文本的改写模块必须附带 `Changed` / `Protected` / `Meaning-Check` / `Risk-Flags` 四字段 Rewrite Contract；且 `[Script]` 层恒为 `NEEDS-LLM`，绝不可输出 `Meaning-Check: PRESERVED`"
+    },
+    {
+      "id": "no-overstatement-or-claim-escalation",
+      "hard": false,
+      "prompt": "用 `claim-forward` 处理自我削弱措辞时，执行者顺便删掉了原文的局限性说明，并把“promising”改成“provably optimal”。",
+      "expect": "绝不删除限制或不利对比；改写不得抬高 claim 强度，受 `over-claim-guard.md` 证据阶梯约束，强度变化须标记 `Risk-Flags: overstatement`"
+    },
+    {
+      "id": "coarse-to-fine-module-routing",
+      "hard": false,
+      "prompt": "用户同时提出需要修实验部分逻辑、润色句子和查格式。执行者应按什么顺序跑模块？",
+      "expect": "由粗到细顺序路由（compile -> bibliography -> format -> figures/tables/... -> grammar/sentences/deai/claim-forward -> logic/literature/experiment/abstract -> ... -> expression），绝不倒序先润色词汇再改逻辑"
+    },
+    {
+      "id": "script-failure-report-exact",
+      "hard": false,
+      "prompt": "运行 `compile.py` 报错退出，执行者打算静默换一个模块继续或隐瞒退出码。",
+      "expect": "脚本失败时立刻停止、如实报告执行的精确命令与退出码，并给出最小下一步建议，不静默切换模块"
+    }
+  ]
+}

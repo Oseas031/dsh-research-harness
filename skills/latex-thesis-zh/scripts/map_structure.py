@@ -3,9 +3,9 @@
 Thesis Structure Mapper - Map multi-file thesis structure
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/map_structure.py main.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/map_structure.py main.tex --json
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/map_structure.py main.tex --detect-template
+    python3 <skill-dir>/scripts/map_structure.py main.tex
+    python3 <skill-dir>/scripts/map_structure.py main.tex --json
+    python3 <skill-dir>/scripts/map_structure.py main.tex --detect-template
 """
 
 import argparse

@@ -9,8 +9,8 @@
 
 命令：
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py main.tex
+python3 <skill-dir>/scripts/analyze_logic.py main.tex
+python3 <skill-dir>/scripts/analyze_experiment.py main.tex
 ```
 
 说明：`analyze_logic.py` 全文档模式默认包含绪论漏斗、章节主线与 C3 绪论-结论闭合检查；

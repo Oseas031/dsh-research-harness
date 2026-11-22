@@ -5,9 +5,9 @@
 Within this skill, compile through the bundled wrapper with the thesis's actual entry file and detected recipe:
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe latexmk
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-bibtex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-biber
+python3 <skill-dir>/scripts/compile.py main.tex --recipe latexmk
+python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-bibtex
+python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-biber
 ```
 
 LuaLaTeX and its bibliography recipes are also supported. The raw commands below document compiler behavior;
@@ -17,10 +17,10 @@ shell escape. Use the entry file, engine, bibliography backend, and output path 
 ## Output Path Contract
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --outdir build
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe latexmk --outdir build
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --compiler xelatex --outdir "build output"
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --compiler lualatex --outdir build
+python3 <skill-dir>/scripts/compile.py main.tex --outdir build
+python3 <skill-dir>/scripts/compile.py main.tex --recipe latexmk --outdir build
+python3 <skill-dir>/scripts/compile.py main.tex --compiler xelatex --outdir "build output"
+python3 <skill-dir>/scripts/compile.py main.tex --compiler lualatex --outdir build
 ```
 
 The source entry's parent directory is the working directory. Without `--outdir`, the expected PDF is the source
@@ -104,8 +104,8 @@ packages without explicit authorization.
 
 ### Bibliography Not Updating
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-bibtex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-biber
+python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-bibtex
+python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-biber
 ```
 
 Choose one matching recipe after inspecting the project; do not run both blindly and do not delete the original PDF.

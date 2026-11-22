@@ -5,8 +5,8 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_format.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_format.py main.tex --strict
+python3 -B <skill-dir>/scripts/check_format.py main.tex
+python3 -B <skill-dir>/scripts/check_format.py main.tex --strict
 ```
 
 ## Details

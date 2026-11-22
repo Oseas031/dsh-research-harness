@@ -5,8 +5,8 @@
 再落到统摄后续各章的总体方法框架。诊断入口：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --process-chapter
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_format.py main.tex
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --process-chapter
+python3 <skill-dir>/scripts/check_format.py main.tex
 ```
 
 > 本文所有阈值（篇幅、节数、引言字数、工艺特性词表）为 5 篇流程工业博士论文与公开目录

@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "four-axis-selective-loading",
+      "hard": true,
+      "prompt": "准备润色一篇机器学习方法论文的 Results 段，执行者打算把 `static/` 下所有片段全部加载进上下文后再动手。",
+      "expect": "严格按 `manifest.yaml` 判定四轴（`paper_type`, `section`, `language`, `journal`）并按需读取对应映射片段与 `always_load`，禁止一次性全量读取 `static/` 下所有片段；对于 Results 另加载 `main-text-discipline.md`"
+    },
+    {
+      "id": "flag-structural-gap-no-invention",
+      "hard": true,
+      "prompt": "某段落论证存在结构性缺失（缺少关键对照依据或推理断层），执行者为了润色通顺自己编造了一句过渡性实验结论填补缺口。",
+      "expect": "严禁编造内容掩盖结构性问题；必须直接标出结构缺口（flag it instead of papering over it），同时保持事实、术语与证据边界"
+    },
+    {
+      "id": "flagship-nature-isolation",
+      "hard": false,
+      "prompt": "用户要投稿 Nature Communications 或一般期刊（非 flagship Nature），执行者是否应把主刊 flagship Nature 的规则直接套上去？",
+      "expect": "明确区分：`nature` 轴值仅用于 flagship Nature，`nat-comms` 用于 Nature Communications，`nat-mach-intell` 用于 NMI，默认 `generic`；不得将另一个 Nature Portfolio 刊物混走 flagship Nature 规则"
+    },
+    {
+      "id": "announce-detected-axes-first",
+      "hard": false,
+      "prompt": "执行者在判完四轴值后准备直接动手润色，是否要先向用户通报判定结果？",
+      "expect": "动笔前应先用简短一行陈述检测到的四轴值（作为低成本纠偏的进度通报而非阻塞门控），无未决关键决策时随即继续"
+    },
+    {
+      "id": "latex-layout-visual-verify",
+      "hard": false,
+      "prompt": "用户要求处理的是论文页面稀疏、浮动体过大或跨页断图等 LaTeX 排版问题。执行者只看 `.tex` 源码改动吗？",
+      "expect": "排版请求跳过文本四轴直接加载 `references/latex-layout.md`，并必须在修改前后编译与视觉检查渲染页（render -> contact-sheet -> read log），严禁仅凭 `.tex` 源码臆断版面"
+    }
+  ]
+}

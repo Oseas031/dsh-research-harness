@@ -2,6 +2,26 @@
 
 本文件记录仓库版本变化。版本号本身不表示 npm 发布或远端 CI 状态；二者以各自的实际记录为准。
 
+## [0.6.0]
+
+### Added
+
+- 插件侧新增 `findings.unknown` 与 `findings.resolve` 工具（支持解决 unknown 与 challenge），对齐 CLI 工具能力面（共 9 个工具）。
+- `evals/skills/` 补齐其余 9 个科研技能的冻结行为评估案例与 rubric（达成 10/10 全技能覆盖）。
+- 新增 `harness-lab/scenarios/pipeline-e2e.mjs`（`npm run test:e2e`）：验证 实验 CSV → `sci-figure/render.py` 300dpi PNG/SVG → `latex-paper-en/compile.py` PDF → DSH 9 工具闭环的完整产物流水线。
+- 新增 `test/v060.test.mjs`，覆盖版本对齐、全工具 schema 规范、10/10 评估资产校验与技能目录零硬编码卫生红线。
+- CLI 新增 `--version` / `-v` / `version` 命令。
+
+### Changed
+
+- `lib/index.js` 从 `package.json` 动态读取 `PKG_VERSION` 写入 `wired` 日志（消除硬编码旧版本号滞后）；`findings.record` 支持 `verifiedBy`，`findings.route` 支持 `acceptance` 充分性规格并同步落 `route-check`。
+- 清除 `skills/` 目录下所有硬编码本机开发路径（改为 `<skill-dir>/` 与 `check_spec.py` 运行时动态拼接 `_SCRIPTS_DIR`）。
+- 升级 `skills/literature-search-arxiv/SKILL.md`（经 `arxiv-v060` 配对进化闭环验证）：明确禁止对 PDF 直接调用二进制读取、优先 HTML/LaTeX 源码或专用提取脚本，并严禁凭记忆猜写 arXiv ID。
+
+### Fixed
+
+- 修复 `skills/sci-figure/render.py` 硬编码 `python3` 在 Windows 环境渲染失败的问题（改用 `sys.executable`），并修正 `skills/sci-figure/SKILL.md` 的反引号嵌套笔误。
+
 ## [0.5.0]
 
 ### Added

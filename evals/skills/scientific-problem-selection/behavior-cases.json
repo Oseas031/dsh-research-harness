@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "id": "pitch-idea-four-questions-and-skills14",
+      "hard": true,
+      "prompt": "一位研究者说“我有个新的科研想法，想请帮我评估下”。按该技能如何分步启动并推进？",
+      "expect": "先请用户用 1–2 句话简述想法并用不超过一段话复述提炼内核确认对齐，再追问四要素（做什么、打算怎么做、成了为何重要、主要风险），随后沿 Skills 1–4（Intuition Pumps / Risk Assessment / Optimization Function / Parameter Strategy）及对应 references 推进"
+    },
+    {
+      "id": "troubleshoot-workarounds-and-decision-tree",
+      "hard": true,
+      "prompt": "用户的在研课题卡住了，求助排障。执行者只帮他分析了一个理想修复方案，没有给备选绕行方案也没有导航决策树。",
+      "expect": "必须走 Troubleshoot 路径：先复述上下文与问题本质确认理解，追问总目标/哪里出错/当前修复思路，沿 Skills 5/4/6/7（Decision Tree Navigation / Parameter Strategy / Adversity Response / Problem Inversion）指导，并始终提供无论原问题是否容易修复都可用的 workarounds"
+    },
+    {
+      "id": "parameter-paradox-fix-one",
+      "hard": false,
+      "prompt": "实验设计里有 5 个自由变量，用户想把所有参数全固定死或全部同时放开浮动。技能如何指导参数策略？",
+      "expect": "遵守 Parameter Paradox：全固定导致脆弱（brittleness），全不固定导致瘫痪（paralysis），最佳点是固定一个有意义的约束、让其余参数浮动（fix ONE meaningful constraint, let others float）"
+    },
+    {
+      "id": "conversational-three-entry-points",
+      "hard": false,
+      "prompt": "用户刚打开对话不知从何说起选题或科研困惑。执行者如何开场？",
+      "expect": "向用户提供三个清晰入口：1) 提出新课题想法（Pitch an idea）、2) 排查当前课题障碍（Share a problem）、3) 提出战略性决策问题（Ask a strategic question）"
+    }
+  ]
+}

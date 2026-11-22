@@ -15,7 +15,7 @@
 ## 获取方式
 
 - 以学院公布的格式审查清单为准。本文件不发明数值豁免、缓冲带或学校容忍度。
-- 终检命令：`python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_spec.py main.tex --template yanshan-ee-2025 --degree doctor --year 2026`
+- 终检命令：`python3 <skill-dir>/scripts/check_spec.py main.tex --template yanshan-ee-2025 --degree doctor --year 2026`
 - 第 42 项的 MODULE 提示可能包含 `--author-cite`。该开关是作者写作约定，不是学院第 42 条原文。
 
 ## 逐项检查清单

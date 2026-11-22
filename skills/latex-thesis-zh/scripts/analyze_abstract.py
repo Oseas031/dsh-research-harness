@@ -7,11 +7,11 @@ enumerated work segments → verification). Pass --model five for the legacy
 five-element conference-paper model.
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex                    # thesis skeleton (doctor)
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --degree master
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --bilingual        # + zh/en consistency
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --model five --lang en --max-words 250
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_abstract.py main.tex --json
+    python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex                    # thesis skeleton (doctor)
+    python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --degree master
+    python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --bilingual        # + zh/en consistency
+    python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --model five --lang en --max-words 250
+    python3 -B <skill-dir>/scripts/analyze_abstract.py main.tex --json
 """
 
 from __future__ import annotations

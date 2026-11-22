@@ -7,11 +7,11 @@
 
 ```bash
 # 逐方法章实验完整性（E-DATA/E-ATTR/E-REF/E-FIG/E-METRIC/E-PARAM/E-ABL/E-ECHO）
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_experiment.py document.tex --per-chapter
+python3 <skill-dir>/scripts/analyze_experiment.py document.tex --per-chapter
 # 拼接感 P-PAPER 默认扫全部正文章并报全部命中；单章文件承上/章序检查须声明真实章号
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py chapter3.tex --first-chapter 3
+python3 <skill-dir>/scripts/analyze_logic.py chapter3.tex --first-chapter 3
 # 草稿态对冲 F-NOTE / 占位符表格行 F-PLACEHOLDER
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_format.py document.tex
+python3 <skill-dir>/scripts/check_format.py document.tex
 ```
 
 > 本文所有阈值为 5 篇工业背景博士论文（固废焚烧、水泥烧成、水泥熟料、水泥粉磨、锌冶炼浸出）

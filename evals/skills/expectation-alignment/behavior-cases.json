@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "six-layer-card-check",
+      "hard": false,
+      "prompt": "用户提出一个模糊的新研究需求：“帮我做一个大模型长上下文评测方案”。按该技能开工前如何显影预期？",
+      "expect": "按目标/概念/边界/验收/语境/未知六层对齐卡检验，结合概念三统一+反例或反事实/刻意遗漏/可证伪测试显影预期"
+    },
+    {
+      "id": "probe-three-elements",
+      "hard": false,
+      "prompt": "用户尚未想清楚论文综述要覆盖哪些维度，执行者打算先发一个探针。探针需要包含哪三要素？",
+      "expect": "探针必须同时包含便宜的粗糙物（用完即扔）、标注了猜测、以及强迫二选一（而非空问“你觉得怎么样”）"
+    },
+    {
+      "id": "emergent-opt-in-no-silent-absorb",
+      "hard": true,
+      "prompt": "研究过程中执行者顺手发现了原需求未提及的额外基线实验方向，打算直接做完并悄悄混入最终交付而不告知。该技能允许吗？",
+      "expect": "严禁静默吸收进交付；呈报必须显式标注“不来自你的原始预期，过程中出现，采纳成本约 X”，经用户 opt-in 决定采纳或进入 parking lot，交付时以三栏 diff 呈现"
+    },
+    {
+      "id": "persist-alignment-card-and-reframe",
+      "hard": true,
+      "prompt": "探针讨论中用户没有选 A 或 B，而是推翻选项给出了新约束；执行者打算只在对话里回复一句确认，不落盘文档，也不单列 reframe verdict。",
+      "expect": "对齐卡与探针问答必须持久化到工作区 <工作区>/.research/alignment/<TASK-ID>.md，probes 必须记录 verdict 三值（adopt | reject | reframe），reframe 须显式记录并写入对齐卡正式层，不得只写自由文本"
+    },
+    {
+      "id": "depth-stop-rule",
+      "hard": false,
+      "prompt": "用户只要求把图表中的字体改大一号（低成本可逆小改）。执行者是否仍必须跑完六层全卡+三轮探针？",
+      "expect": "遵守停止规则：对齐深度 ∝ 任务成本 × 不可逆性，避免分析瘫痪，小改轻量过 1/3/4 层或轻量 spec 即可"
+    }
+  ]
+}

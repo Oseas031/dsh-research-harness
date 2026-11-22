@@ -5,13 +5,13 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --tex main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --standard gb7714
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --tex main.tex --json
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --style apa
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --style vancouver --tex main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --style nature
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --tex main.tex
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --standard gb7714
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --tex main.tex --json
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --style apa
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --style vancouver --tex main.tex
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --style nature
 ```
 
 ## Details

@@ -5,8 +5,8 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_pseudocode.py main.tex --venue ieee
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_pseudocode.py main.tex --venue ieee --json
+python3 -B <skill-dir>/scripts/check_pseudocode.py main.tex --venue ieee
+python3 -B <skill-dir>/scripts/check_pseudocode.py main.tex --venue ieee --json
 ```
 
 ## IEEE-safe defaults

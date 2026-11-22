@@ -12,10 +12,10 @@ references/modules/blind-review.md），R3 为常见惯例提示（以学校盲�
 零改写、只插 `% TODO-BLIND` 注释，由 agent 给出 [LLM] 改写建议、用户确认后落入副本。
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/blind_review.py main.tex --check
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/blind_review.py main.tex --check --author 张三 --supervisor 李四
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/blind_review.py main.tex --generate --dry-run
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/blind_review.py main.tex --generate [--suffix _blind] [--force]
+    python3 <skill-dir>/scripts/blind_review.py main.tex --check
+    python3 <skill-dir>/scripts/blind_review.py main.tex --check --author 张三 --supervisor 李四
+    python3 <skill-dir>/scripts/blind_review.py main.tex --generate --dry-run
+    python3 <skill-dir>/scripts/blind_review.py main.tex --generate [--suffix _blind] [--force]
 """
 
 import argparse

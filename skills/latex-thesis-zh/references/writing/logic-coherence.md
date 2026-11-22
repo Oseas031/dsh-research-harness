@@ -160,7 +160,7 @@
 **如何运行**（附加式——不带该开关时，逻辑模块输出与原来完全一致）：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --motivation-thread
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --motivation-thread
 ```
 
 **产出**（只读，全部标 `[Script]`）：
@@ -195,7 +195,7 @@ python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py 
 当问题落在首句总领、末句收束、相邻段接口或单句/罗列段时，运行：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --paragraph-arc
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-arc
 ```
 
 | 代码 | 观察面 | 边界 |

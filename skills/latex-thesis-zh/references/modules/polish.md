@@ -5,11 +5,11 @@
 ## 命令与单元
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --plan
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --plan --section introduction
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --plan --unit 1.1.1
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --verify --unit 1.1.1 --revised revised.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/polish_unit_zh.py main.tex --verify --original original.tex --revised revised.tex --terms terms.json --max-growth 0.20 --json
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --plan
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --plan --section introduction
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --plan --unit 1.1.1
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --verify --unit 1.1.1 --revised revised.tex
+python3 <skill-dir>/scripts/polish_unit_zh.py main.tex --verify --original original.tex --revised revised.tex --terms terms.json --max-growth 0.20 --json
 ```
 
 `--plan` 与 `--verify` 互斥。核对需要 `--revised`，且 `--unit` 与 `--original` 二选一。单章入口可用 `--first-chapter N` 声明真实章号，语义沿用小节上下文游标。

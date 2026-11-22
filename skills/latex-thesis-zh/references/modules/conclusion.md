@@ -5,8 +5,8 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_conclusion.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_conclusion.py main.tex --json
+python3 -B <skill-dir>/scripts/analyze_conclusion.py main.tex
+python3 -B <skill-dir>/scripts/analyze_conclusion.py main.tex --json
 ```
 
 多文件工程传入口 `main.tex`，脚本自动 `\input`/`\include` 装配并定位结论章

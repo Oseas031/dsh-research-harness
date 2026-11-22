@@ -3,9 +3,9 @@
 Table Generator - Convert structured data to publication-ready table code.
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/generate_table.py data.csv --style booktabs
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/generate_table.py data.json --style booktabs --bilingual
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/generate_table.py data.csv --style booktabs --stats
+    python3 -B <skill-dir>/scripts/generate_table.py data.csv --style booktabs
+    python3 -B <skill-dir>/scripts/generate_table.py data.json --style booktabs --bilingual
+    python3 -B <skill-dir>/scripts/generate_table.py data.csv --style booktabs --stats
 """
 
 import argparse

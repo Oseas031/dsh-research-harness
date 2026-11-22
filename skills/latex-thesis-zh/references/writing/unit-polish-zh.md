@@ -12,9 +12,9 @@
 2. 在带章节结构的入口文件上运行下列三个单元前诊断，替换章节键，只采纳源文件与行区间落在当前单元内的条目；不要在裸润色片段上运行它们后宣称无问题。必要时补充 `logic --paragraph-arc`。
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --section introduction
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_check.py main.tex --section introduction
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_claim_forward.py main.tex --section introduction
+python3 <skill-dir>/scripts/check_style_zh.py main.tex --section introduction
+python3 <skill-dir>/scripts/deai_check.py main.tex --section introduction
+python3 <skill-dir>/scripts/check_claim_forward.py main.tex --section introduction
 ```
 
 3. 依下文保留清单与改动准入写出单元润色稿。当前小节包含的原有标题命令与标题文本原样保留；邻域只帮助理解，不复制到稿中。

@@ -3,8 +3,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Ledger } from '../lib/ledger.js';
 import { Evolver } from '../lib/evolve.js';
-import { createHarnessLab } from './runtime.mjs';
+import { createHarnessLab, REPO_ROOT } from './runtime.mjs';
 
+const PKG_VERSION = JSON.parse(readFileSync(join(REPO_ROOT, 'package.json'), 'utf8')).version;
 const lab = await createHarnessLab();
 const LEDGER_DIR = lab.ledgerDir;
 const results = [];
@@ -20,8 +21,8 @@ try {
   let defs = [];
   try { defs = ctx.tools.definitions(undefined); } catch (e) { defs = { err: String(e) }; }
   const names = Array.isArray(defs) ? defs.map(d => d.name) : defs;
-  step('P0 findings.record / findings.status 注册在案（官方 definitions() 可见）',
-    Array.isArray(names) && names.includes('findings.record') && names.includes('findings.status'),
+  step('P0 全部 9 个研究契约工具注册在案（官方 definitions() 可见）',
+    Array.isArray(names) && ['findings.record', 'findings.status', 'findings.aggregate', 'findings.challenge', 'findings.route', 'findings.verify', 'findings.gate-skip', 'findings.unknown', 'findings.resolve'].every(n => names.includes(n)),
     Array.isArray(names) ? names.join(',') : JSON.stringify(names).slice(0, 120));
   const recDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.record') : null;
   step('P0 注册定义带 schema + execute + render',
@@ -40,9 +41,10 @@ try {
   step('P1b ledger.jsonl 物化且可溯源', ledgerText.some(e => e.kind === 'finding' && e.provenance?.startsWith('https://arxiv')),
     'lines: ' + ledgerText.map(e => e.kind).join(','));
   const guardLog = readFileSync(LEDGER_DIR + '/guard-log.jsonl', 'utf8').trim().split('\n').map(l => JSON.parse(l));
-  step('P1 拒绝留痕 guard-log.jsonl（wired + denial）',
-    guardLog.some(g => g.kind === 'wired') && guardLog.some(g => g.code === 'EVIDENCE_NO_PROVENANCE'),
-    guardLog.map(g => g.kind + (g.code ? ':' + g.code : '')).join(' | '));
+  const wiredEntry = guardLog.find(g => g.kind === 'wired');
+  step('P1 拒绝留痕 guard-log.jsonl（wired 版本对齐 + denial）',
+    wiredEntry?.version === PKG_VERSION && wiredEntry?.tools?.length === 9 && guardLog.some(g => g.code === 'EVIDENCE_NO_PROVENANCE'),
+    'v=' + wiredEntry?.version + ' | ' + guardLog.map(g => g.kind + (g.code ? ':' + g.code : '')).join(' | '));
 
   // ---- P2: 未决 blocker 挡 complete ----
   const ledger = new Ledger(LEDGER_DIR, { receipts: true });
@@ -111,11 +113,24 @@ try {
   step('P6 全字段 skip 覆盖后 complete 放行',
     skipOut?.skipped === 1 && pass6 === undefined, 'skip id=' + skipOut?.id + ' covers=' + u6.id);
 
-  // ---- P7: 最短路路由（v0.4）：台账状态决定下一步 ----
+  // ---- P7: 插件工具对齐（v0.6 unknown/resolve + 带 acceptance 的 route + 修复轮上限）----
+  const unknownDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.unknown') : null;
+  const resolveDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.resolve') : null;
+  const u7 = unknownDef ? await unknownDef.execute({ what: '协议测试缺口', classification: 'blocker' }, { name: 'findings.unknown' }) : null;
+  const deny7 = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
+  const res7 = resolveDef && u7?.id ? await resolveDef.execute({ id: u7.id, resolution: '真实上下文已验证解决' }, { name: 'findings.resolve' }) : null;
+  const pass7 = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
+  step('P7b findings.unknown(blocker) → 挡 complete → findings.resolve 放行',
+    !!u7?.id && String(deny7?.reason ?? '').includes('EVIDENCE_BLOCKERS_OPEN') && res7?.status === 'resolved' && pass7 === undefined,
+    'id=' + u7?.id + ' resolved=' + res7?.id);
+
   const routeDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.route') : null;
-  const r7 = routeDef ? await routeDef.execute({}, { name: 'findings.route' }) : null;
-  step('P7 findings.route 无 blocker 有产出 → run-acceptance',
-    r7?.action === 'run-acceptance', JSON.stringify(r7?.why ?? '').slice(0, 80));
+  const r7cont = routeDef ? await routeDef.execute({ acceptance: { minFindings: 99 } }, { name: 'findings.route' }) : null;
+  const r7 = routeDef ? await routeDef.execute({ acceptance: { minFindings: 1, minObservedRatio: 1 } }, { name: 'findings.route' }) : null;
+  const routeCheckCount = new Ledger(LEDGER_DIR).entries().filter(e => e.kind === 'route-check').length;
+  step('P7 findings.route acceptance 充分性路由并自动落 route-check',
+    r7cont?.action === 'continue-recording' && r7?.action === 'run-acceptance' && routeCheckCount >= 2,
+    'cont=' + r7cont?.action + ' pass=' + r7?.action + ' checks=' + routeCheckCount);
   const r7b = routeDef ? await routeDef.execute({ repairFailed: true }, { name: 'findings.route' }) : null;
   const r7c = routeDef ? await routeDef.execute({ repairFailed: true }, { name: 'findings.route' }) : null;
   step('P7 修复轮 2/2（delegate）→ BLOCKED',

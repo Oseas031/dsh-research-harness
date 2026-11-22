@@ -4,9 +4,9 @@ De-AI Writing Trace Checker for English Academic Papers
 Analyzes LaTeX/Typst source code for AI writing patterns.
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --section introduction
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --analyze
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --fix-suggestions
+    python3 -B <skill-dir>/scripts/deai_check.py main.tex --section introduction
+    python3 -B <skill-dir>/scripts/deai_check.py main.tex --analyze
+    python3 -B <skill-dir>/scripts/deai_check.py main.tex --fix-suggestions
 """
 
 from __future__ import annotations

@@ -3,9 +3,9 @@
 LaTeX Format Checker - chktex wrapper with enhanced reporting
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_format.py main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_format.py main.tex --strict
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_format.py main.tex --config .chktexrc
+    python3 -B <skill-dir>/scripts/check_format.py main.tex
+    python3 -B <skill-dir>/scripts/check_format.py main.tex --strict
+    python3 -B <skill-dir>/scripts/check_format.py main.tex --config .chktexrc
 
 Note: issue categorization (spacing/quotation/parentheses/.../other) is
 best-effort, keyword-matched against chktex's English-locale message text;

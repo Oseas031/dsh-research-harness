@@ -134,7 +134,7 @@ design is visible, state what it is used for or what it guarantees by definition
 Run the candidate checker only on the method scope:
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --section methods
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --section methods
 ```
 
 Treat `M-HEADING`, `M-SEQWORD`, and `M-EQUATION` as `[Script]` candidates requiring LLM review. Fill

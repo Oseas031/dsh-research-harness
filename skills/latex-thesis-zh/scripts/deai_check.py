@@ -4,9 +4,9 @@ De-AI Writing Trace Checker for Chinese Academic Theses
 Analyzes LaTeX/Typst source code for AI writing patterns.
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_check.py main.tex --section introduction
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_check.py main.tex --analyze
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_check.py main.tex --fix-suggestions
+    python3 <skill-dir>/scripts/deai_check.py main.tex --section introduction
+    python3 <skill-dir>/scripts/deai_check.py main.tex --analyze
+    python3 <skill-dir>/scripts/deai_check.py main.tex --fix-suggestions
 """
 
 from __future__ import annotations
@@ -144,7 +144,7 @@ def _load_thresholds(script_dir: Path) -> dict:
 
     yaml 文件是 DEFAULT_THRESHOLDS 之上的可选覆盖层。部分字段缺省时按 key 合并，
     用户只想调一个阈值不必复述全部配置。PyYAML 是可选依赖：skill 安装到
-    E:/dsh-research-harness/skills/ 后用户环境可能没有 yaml，此时回落内置默认值并提示，
+    <skills-dir>/ 后用户环境可能没有 yaml，此时回落内置默认值并提示，
     脚本不得崩溃。
     """
     merged = {

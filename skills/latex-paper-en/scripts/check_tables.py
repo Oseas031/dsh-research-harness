@@ -3,9 +3,9 @@
 Table Structure Checker - Validate three-line table compliance in LaTeX documents.
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_tables.py main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_tables.py main.tex --fix-suggestions
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_tables.py main.tex --json
+    python3 -B <skill-dir>/scripts/check_tables.py main.tex
+    python3 -B <skill-dir>/scripts/check_tables.py main.tex --fix-suggestions
+    python3 -B <skill-dir>/scripts/check_tables.py main.tex --json
 """
 
 import argparse

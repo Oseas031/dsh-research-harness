@@ -5,9 +5,9 @@
 **Purpose**: Ensure logical flow between paragraphs and strengthen methodological rigor in academic writing.
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --section methods
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --paragraph-arc [--section introduction]
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --section methods
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-arc [--section introduction]
 ```
 
 **Focus Areas**:
@@ -169,7 +169,7 @@ _This rule requires LLM judgment to assess the narrative arc._
 **How to run** (additive — normal logic output is unchanged when the flag is absent):
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --motivation-thread
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --motivation-thread
 ```
 
 **What it produces** (read-only, all findings tagged `[Script]`):

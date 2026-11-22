@@ -7,9 +7,9 @@ Spec Compliance Final Check - 对照学校规范清单逐项终检
 逐项报告。版式渲染类条目不做静态判定，归入打印前自查单。
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_spec.py main.tex --template yanshan --degree doctor
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_spec.py main.tex --spec-file my-school.md --degree master
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_spec.py main.tex --template yanshan --degree doctor --json
+    python3 <skill-dir>/scripts/check_spec.py main.tex --template yanshan --degree doctor
+    python3 <skill-dir>/scripts/check_spec.py main.tex --spec-file my-school.md --degree master
+    python3 <skill-dir>/scripts/check_spec.py main.tex --template yanshan --degree doctor --json
 """
 
 import argparse
@@ -166,13 +166,14 @@ TEMPLATE_THRESHOLDS: dict[str, dict[str, dict]] = {
 }
 
 # module: 条目 → 建议命令（与 SKILL.md Module Router 主命令一致）
+_SCRIPTS_DIR = Path(__file__).resolve().parent.as_posix()
 MODULE_COMMANDS = {
-    "tables": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_tables.py main.tex",
-    "references": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_references.py main.tex",
+    "tables": f"python3 {_SCRIPTS_DIR}/check_tables.py main.tex",
+    "references": f"python3 {_SCRIPTS_DIR}/check_references.py main.tex",
     # 2026-07-01 起可改用 --standard gb7714-2025 按新国标检查。
-    "bibliography": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/verify_bib.py references.bib --standard gb7714",
-    "consistency": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --terms",
-    "format": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_format.py main.tex",
+    "bibliography": f"python3 {_SCRIPTS_DIR}/verify_bib.py references.bib --standard gb7714",
+    "consistency": f"python3 {_SCRIPTS_DIR}/check_consistency.py main.tex --terms",
+    "format": f"python3 {_SCRIPTS_DIR}/check_format.py main.tex",
 }
 
 FRONT_BACK_TITLE_RE = re.compile(
@@ -765,23 +766,23 @@ def _college_module_command(mod: str) -> str:
     """学院模板的人工后续命令。不执行，也不改旧模板的 MODULE_COMMANDS。"""
     hints = {
         "expression": (
-            "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --school yanshan-ee-2025"
+            "python3 <skill-dir>/scripts/check_style_zh.py main.tex --school yanshan-ee-2025"
         ),
-        "format": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_format.py main.tex --school yanshan-ee-2025",
-        "tables": "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_tables.py main.tex --school yanshan-ee-2025",
+        "format": "python3 <skill-dir>/scripts/check_format.py main.tex --school yanshan-ee-2025",
+        "tables": "python3 <skill-dir>/scripts/check_tables.py main.tex --school yanshan-ee-2025",
         "references": (
-            "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_references.py main.tex "
+            "python3 <skill-dir>/scripts/check_references.py main.tex "
             "--school yanshan-ee-2025 --author-cite --repeat-cite"
             "（--author-cite 是作者写作约定，不是学院第42条原文；"
             "命令供人工后续运行，本行未检查）"
         ),
         "bibliography": (
-            "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/verify_bib.py references.bib "
+            "python3 <skill-dir>/scripts/verify_bib.py references.bib "
             "--standard gb7714 --college-details"
             "（须将 references.bib 替换为实际 bib 路径；命令供人工后续运行，本行未检查）"
         ),
         "consistency": (
-            "python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --abbreviation-style"
+            "python3 <skill-dir>/scripts/check_consistency.py main.tex --abbreviation-style"
         ),
     }
     command = hints.get(mod, MODULE_COMMANDS.get(mod, "见 SKILL.md Module Router"))

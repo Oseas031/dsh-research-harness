@@ -16,8 +16,8 @@ multi-file thesis project (\input/\include resolved automatically).
 ## Command
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_references.py main.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_references.py main.tex --json
+python3 <skill-dir>/scripts/check_references.py main.tex
+python3 <skill-dir>/scripts/check_references.py main.tex --json
 ```
 
 支持 `\ref` / `\eqref` / `\autoref` / `\cref` / `\Cref` / `\pageref` /

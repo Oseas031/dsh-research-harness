@@ -5,8 +5,8 @@
 ## 使用入口
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --paragraph-roles
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --paragraph-roles --section method
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-roles
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-roles --section method
 ```
 
 - **适用范围**：第 2 章至结论前的正文各章（绪论专章见 [`introduction-guide-zh.md`](introduction-guide-zh.md)，结论专章见 [`conclusion-guide-zh.md`](conclusion-guide-zh.md)）。

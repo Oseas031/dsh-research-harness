@@ -33,7 +33,7 @@ Start the mechanical pass with the bundled checker (run it by its full path so o
 working directory):
 
 ```bash
-python3 E:/dsh-research-harness/skills/nature-polishing/references/shared/scripts/check_consistency.py manuscript.tex tables.tex \
+python3 <skill-dir>/references/shared/scripts/check_consistency.py manuscript.tex tables.tex \
   --term-group 'test-object=specimen|sample|test article' \
   --term-group 'method-name=GraphNet|Graph Net'
 ```

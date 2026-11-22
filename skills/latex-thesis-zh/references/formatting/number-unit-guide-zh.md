@@ -58,7 +58,7 @@
 同列表头单位属于 `check_tables.py`，避免同一处报两次。
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --school yanshan-ee-2025
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --school yanshan-ee-2025
 ```
 
 ## 三、单位用正体（GB/T 3101）

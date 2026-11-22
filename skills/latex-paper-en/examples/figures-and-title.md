@@ -9,8 +9,8 @@ Recommended module sequence:
 
 Commands:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_figures.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py main.tex --check
+python3 -B <skill-dir>/scripts/check_figures.py main.tex
+python3 -B <skill-dir>/scripts/optimize_title.py main.tex --check
 ```
 
 Expected output:

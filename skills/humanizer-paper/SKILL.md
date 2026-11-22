@@ -121,7 +121,7 @@ Run the bundled linter for quantifiable tells (if Python is unavailable, do the
 mechanical scan by hand from the same checklist):
 
 ```bash
-python3 E:/dsh-research-harness/skills/humanizer-paper/scripts/polish_lint.py \
+python3 <skill-dir>/scripts/polish_lint.py \
   --target "<en-journal|zh-dissertation>" \
   --file "<path-or-omit-to-read-stdin>" \
   --json

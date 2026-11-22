@@ -9,8 +9,8 @@
 
 命令：
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/verify_bib.py references.bib --standard gb7714
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_check.py main.tex --section introduction
+python3 <skill-dir>/scripts/verify_bib.py references.bib --standard gb7714
+python3 <skill-dir>/scripts/deai_check.py main.tex --section introduction
 ```
 
 预期输出：

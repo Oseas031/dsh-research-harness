@@ -27,28 +27,28 @@
 **Usage**:
 ```bash
 # Default: latexmk auto-handles all dependencies (recommended)
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex                          # Auto-detect compiler + latexmk
+python3 -B <skill-dir>/scripts/compile.py main.tex                          # Auto-detect compiler + latexmk
 
 # Single-pass compilation (quick builds)
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex        # PDFLaTeX only
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe xelatex         # XeLaTeX only
+python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex        # PDFLaTeX only
+python3 -B <skill-dir>/scripts/compile.py main.tex --recipe xelatex         # XeLaTeX only
 
 # Explicit bibliography workflows (when you need control)
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex-bibtex # Traditional BibTeX
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe pdflatex-biber  # Modern biblatex (recommended)
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe xelatex-bibtex  # XeLaTeX + BibTeX
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --recipe xelatex-biber   # XeLaTeX + biblatex
+python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex-bibtex # Traditional BibTeX
+python3 -B <skill-dir>/scripts/compile.py main.tex --recipe pdflatex-biber  # Modern biblatex (recommended)
+python3 -B <skill-dir>/scripts/compile.py main.tex --recipe xelatex-bibtex  # XeLaTeX + BibTeX
+python3 -B <skill-dir>/scripts/compile.py main.tex --recipe xelatex-biber   # XeLaTeX + biblatex
 
 # With output directory
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --outdir build
+python3 -B <skill-dir>/scripts/compile.py main.tex --outdir build
 
 # Force detected-compiler biber workflow
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --biber
+python3 -B <skill-dir>/scripts/compile.py main.tex --biber
 
 # Utilities
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --watch                  # Watch mode
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --clean                  # Clean aux files
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex --clean-all              # Clean all (incl. PDF)
+python3 -B <skill-dir>/scripts/compile.py main.tex --watch                  # Watch mode
+python3 -B <skill-dir>/scripts/compile.py main.tex --clean                  # Clean aux files
+python3 -B <skill-dir>/scripts/compile.py main.tex --clean-all              # Clean all (incl. PDF)
 ```
 
 **Auto-detection**: Script detects Chinese content (ctex, xeCJK, Chinese chars) and auto-selects xelatex.

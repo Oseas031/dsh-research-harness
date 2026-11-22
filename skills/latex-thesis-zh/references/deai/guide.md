@@ -586,7 +586,7 @@ MAE。相比最佳基线（Transformer），本文方法平均将 MAE
 - **为每条结论标注 AIGC 维度** D1-D5 并附一句 teaching note（检测器为何标记该模式）。
 
 ```powershell
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_check.py main.tex --analyze --tier heavy
+python3 <skill-dir>/scripts/deai_check.py main.tex --analyze --tier heavy
 ```
 
 五个维度面向可读性，**不针对知网/维普等任何具体检测平台**：D1 句长变化、D2 段落结构、D3 信息密度、D4 连接词频率、D5 术语-语境匹配。阈值（含 `sentence_length.cv_threshold`）仍可经 `references/deai/tone-thresholds.yaml` 覆盖。

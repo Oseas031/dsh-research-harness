@@ -3,8 +3,8 @@
 Detect thesis template and report key requirements.
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/detect_template.py main.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/detect_template.py main.tex --json
+    python3 <skill-dir>/scripts/detect_template.py main.tex
+    python3 <skill-dir>/scripts/detect_template.py main.tex --json
 """
 
 import argparse

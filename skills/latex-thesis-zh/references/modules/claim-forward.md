@@ -7,9 +7,9 @@
 ## 命令
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_claim_forward.py main.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_claim_forward.py main.tex --section introduction
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_claim_forward.py main.tex --section conclusion --json
+python3 <skill-dir>/scripts/check_claim_forward.py main.tex
+python3 <skill-dir>/scripts/check_claim_forward.py main.tex --section introduction
+python3 <skill-dir>/scripts/check_claim_forward.py main.tex --section conclusion --json
 ```
 
 `--section` 接受与其他模块相同的英文键与中文章节名（`introduction` / `绪论`、`contribution`、`results`、`discussion`、`conclusion` / `结论与展望` …）。不传 `--section` 时扫描全部识别到的章节。多文件工程经 `tex_loader` 展开 `\input` / `\include`。退出码恒为 0；未知章节打印 `ERROR` 行并列出可用键。

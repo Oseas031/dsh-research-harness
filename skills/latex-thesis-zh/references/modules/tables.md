@@ -5,11 +5,11 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_tables.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_tables.py main.tex --fix-suggestions
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_tables.py main.tex --json
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/generate_table.py data.csv --style booktabs --bilingual
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/generate_table.py data.json --style booktabs
+python3 -B <skill-dir>/scripts/check_tables.py main.tex
+python3 -B <skill-dir>/scripts/check_tables.py main.tex --fix-suggestions
+python3 -B <skill-dir>/scripts/check_tables.py main.tex --json
+python3 -B <skill-dir>/scripts/generate_table.py data.csv --style booktabs --bilingual
+python3 -B <skill-dir>/scripts/generate_table.py data.json --style booktabs
 ```
 
 ## Details

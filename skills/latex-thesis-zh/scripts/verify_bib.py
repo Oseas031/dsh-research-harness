@@ -4,9 +4,9 @@ BibTeX Verification Script - Check bibliography integrity
 Includes static checks and online verification preparation.
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/verify_bib.py references.bib
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/verify_bib.py references.bib --standard gb7714
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/verify_bib.py references.bib --online-check
+    python3 <skill-dir>/scripts/verify_bib.py references.bib
+    python3 <skill-dir>/scripts/verify_bib.py references.bib --standard gb7714
+    python3 <skill-dir>/scripts/verify_bib.py references.bib --online-check
 """
 
 from __future__ import annotations

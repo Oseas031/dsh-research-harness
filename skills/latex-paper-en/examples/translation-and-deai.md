@@ -9,8 +9,8 @@ Recommended module sequence:
 
 Commands:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/translate_academic.py input_zh.txt --domain deep-learning
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/deai_check.py main.tex --section introduction
+python3 -B <skill-dir>/scripts/translate_academic.py input_zh.txt --domain deep-learning
+python3 -B <skill-dir>/scripts/deai_check.py main.tex --section introduction
 ```
 
 Expected output:

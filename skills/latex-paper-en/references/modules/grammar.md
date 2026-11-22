@@ -7,8 +7,8 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_grammar.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_grammar.py main.tex --section introduction
+python3 -B <skill-dir>/scripts/analyze_grammar.py main.tex
+python3 -B <skill-dir>/scripts/analyze_grammar.py main.tex --section introduction
 ```
 
 `--goal` (default `grammar`) and `--strength` (default `minimal`) declare the edit envelope; see [routing-rules.md](routing-rules.md). `--goal concision` routes to `sentences` and `--goal coherence` routes to `logic` — this module has no rules for either.

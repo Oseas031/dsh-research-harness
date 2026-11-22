@@ -8,19 +8,19 @@
 
 **Generate title from content**:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py main.tex --generate
+python3 -B <skill-dir>/scripts/optimize_title.py main.tex --generate
 # Analyzes abstract/introduction to propose 3-5 title candidates
 ```
 
 **Optimize existing title**:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py main.tex --optimize
+python3 -B <skill-dir>/scripts/optimize_title.py main.tex --optimize
 # Analyzes current title and provides improvement suggestions
 ```
 
 **Check title quality**:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py main.tex --check
+python3 -B <skill-dir>/scripts/optimize_title.py main.tex --check
 # Evaluates title against best practices (score 0-100)
 ```
 
@@ -192,18 +192,18 @@ decides whether a term is vague or part of a legitimate technical name.
 
 **Interactive Mode** (Recommended):
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py main.tex --interactive
+python3 -B <skill-dir>/scripts/optimize_title.py main.tex --interactive
 # Step-by-step guided title creation with user input
 ```
 
 **Batch Mode** (For multiple papers):
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py "papers/*.tex" --batch --output title_report.json
+python3 -B <skill-dir>/scripts/optimize_title.py "papers/*.tex" --batch --output title_report.json
 ```
 
 **Title A/B Testing** (Optional):
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/optimize_title.py main.tex --compare "Title A" "Title B" "Title C"
+python3 -B <skill-dir>/scripts/optimize_title.py main.tex --compare "Title A" "Title B" "Title C"
 # Compares multiple title candidates with detailed scoring
 ```
 

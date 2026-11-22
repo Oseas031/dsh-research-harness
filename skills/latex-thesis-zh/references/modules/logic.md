@@ -56,7 +56,7 @@ S1 只判断"有没有导语"。对正文各章（第 2 章至结论前、且含
 ## Intro Mainline Checks (`--intro-mainline`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --intro-mainline
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --intro-mainline
 ```
 
 绪论主线四项专项检查，全部 `[Script]` 启发式，仅在传入该 flag 时运行（默认行为不变）：
@@ -73,7 +73,7 @@ python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.
 ## Process Chapter Mainline Checks (`--process-chapter`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --process-chapter
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --process-chapter
 ```
 
 过程分析章（工业/过程背景第二章"工艺分析 + 全文方法框架"章式）主线专项检查，全部
@@ -96,7 +96,7 @@ Info（"若为方法+实验章式请走方法章规则"），不强套过程分�
 ## Method Narrative Checks (`--method-narrative`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --method-narrative --section 〈章名〉
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --method-narrative --section 〈章名〉
 ```
 
 当方法章包含多个核心模块，或需要审阅模块动机、输入输出、公式解释和相邻接口时运行本分支。
@@ -118,7 +118,7 @@ python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.
 ## Paragraph Arc Checks (`--paragraph-arc`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --paragraph-arc [--section introduction]
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --paragraph-arc [--section introduction]
 ```
 
 该附加分支检查 `P-ARC-LEAD`、`P-ARC-CLOSE`、`P-ARC-LINK` 和 `P-ARC-FLAT`。单项默认
@@ -133,8 +133,8 @@ Info/P3；只有绪论/相关工作中连续 3 个合格段同时缺少 LEAD+CLO
 ## Subsection Context Checks (`--subsection-context`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --subsection-context [--subsection 2.1.1]
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --emit-window --subsection 2.1.1
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --subsection-context [--subsection 2.1.1]
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --emit-window --subsection 2.1.1
 ```
 
 该附加分支把 `depth == 3` 的标题作为 `x.x.x` 小节单元，观察 `S-CTX-IN`、
@@ -149,7 +149,7 @@ python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.
 ## Paragraph Role Checks (`--paragraph-roles`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --paragraph-roles [--section SECTION]
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --paragraph-roles [--section SECTION]
 ```
 
 该附加分支观察正文各级段落的职责分配与结构重复，输出六类 `[Script]` 观察，默认 Info/P3 并含 `Meaning-Check: NEEDS-LLM`。`--method-narrative` 在未指定 `--section` 时的提前返回路径保持不变，在该路径下 `--paragraph-roles` 不运行。`--section` 接受英文键或中文章节名（如 `method`），不接受章号；按区间过滤，本章小结标题若不在所选区间内则不报 `PR-SUM-NEW`。
@@ -168,7 +168,7 @@ python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.
 ## Chapter Intro Style Checks (`--chapter-intro-style`)
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py thesis.tex --chapter-intro-style [--section SECTION] [--first-chapter N]
+python3 -B <skill-dir>/scripts/analyze_logic.py thesis.tex --chapter-intro-style [--section SECTION] [--first-chapter N]
 ```
 
 该附加分支观察正文各章引言的自然段式（一段式 / 两段式 / 多段式）与核心要件覆盖情况，输出三类 `[Script]` 观察，默认 Info/P3 并含 `Meaning-Check: NEEDS-LLM`。`--method-narrative` 在未指定 `--section` 时的提前返回路径保持不变，在该路径下 `--chapter-intro-style` 不运行。`--section` 接受英文键或中文章节名（如 `method`），按区间过滤引言；`--first-chapter N` 声明单章真实章号，使第 2 章承上豁免按真实章号生效。

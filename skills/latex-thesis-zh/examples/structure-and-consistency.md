@@ -9,9 +9,9 @@
 
 命令：
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/map_structure.py main.tex
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --terms
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --abbreviations
+python3 <skill-dir>/scripts/map_structure.py main.tex
+python3 <skill-dir>/scripts/check_consistency.py main.tex --terms
+python3 <skill-dir>/scripts/check_consistency.py main.tex --abbreviations
 ```
 
 预期输出：
@@ -25,9 +25,9 @@ python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency
 
 命令：
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --governance --custom-terms terms.json
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --abbreviation-style
-python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_style_zh.py main.tex --degree-wording
+python3 <skill-dir>/scripts/check_consistency.py main.tex --governance --custom-terms terms.json
+python3 <skill-dir>/scripts/check_consistency.py main.tex --abbreviation-style
+python3 -B <skill-dir>/scripts/check_style_zh.py main.tex --degree-wording
 ```
 
 预期输出：

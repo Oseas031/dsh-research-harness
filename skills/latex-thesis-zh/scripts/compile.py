@@ -7,12 +7,12 @@ LaTeX Compilation Script - 中文学位论文编译器 (xelatex/lualatex)
     索引、术语表），并自动决定最优编译次数。这是中文论文的推荐方案。
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex                       # 默认: latexmk + xelatex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --compiler xelatex    # 显式指定编译器
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-bibtex  # 传统 BibTeX
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-biber   # 现代 biblatex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --watch               # 监视模式
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --clean               # 清理辅助文件
+    python3 <skill-dir>/scripts/compile.py main.tex                       # 默认: latexmk + xelatex
+    python3 <skill-dir>/scripts/compile.py main.tex --compiler xelatex    # 显式指定编译器
+    python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-bibtex  # 传统 BibTeX
+    python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-biber   # 现代 biblatex
+    python3 <skill-dir>/scripts/compile.py main.tex --watch               # 监视模式
+    python3 <skill-dir>/scripts/compile.py main.tex --clean               # 清理辅助文件
 
 Recipes (中文论文推荐 XeLaTeX/LuaLaTeX):
     latexmk          - LaTeXmk + XeLaTeX 自动处理 (默认 - 推荐)
@@ -400,10 +400,10 @@ Recipes (中文论文推荐 XeLaTeX):
   lualatex-biber   lualatex -> biber -> lualatex*2
 
 Examples:
-  python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex                        # 默认: latexmk + xelatex
-  python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-bibtex  # 传统 BibTeX
-  python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --recipe xelatex-biber   # 现代 biblatex
-  python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/compile.py main.tex --watch                # 监视模式
+  python3 <skill-dir>/scripts/compile.py main.tex                        # 默认: latexmk + xelatex
+  python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-bibtex  # 传统 BibTeX
+  python3 <skill-dir>/scripts/compile.py main.tex --recipe xelatex-biber   # 现代 biblatex
+  python3 <skill-dir>/scripts/compile.py main.tex --watch                # 监视模式
         """,
     )
     parser.add_argument("tex_file", help="主 .tex 文件路径")

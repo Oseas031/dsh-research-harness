@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "preserve-citations-and-macros",
+      "hard": true,
+      "prompt": "用户要求润色中文学位论文第三章语言表达。执行者可以顺手删改 `\\cite{}`、`\\ref{}`、`\\label{}`、参考文献键或模板宏命令吗？",
+      "expect": "全程保留 `\\cite{}`、`\\ref{}`、`\\label{}`、数学环境、参考文献键与模板宏命令，邻域只读，不得破坏原有标题、事实及结论强度"
+    },
+    {
+      "id": "explicit-flag-isolation",
+      "hard": true,
+      "prompt": "未传 `--school yanshan-ee-2025`、`--governance` 或 `--cross-surface` 等显式开关时，执行者默认启用这些学院/专项治理候选规则，对通用学位论文输出额外告警。",
+      "expect": "显式开关严格隔离：学院规则（仅 `--school yanshan-ee-2025`）、术语治理（`--governance`）、跨表面核对（`--cross-surface`）等只在显式开关下运行，默认行为保持不变，且脚本候选仅为局部位置、`Meaning-Check: NEEDS-LLM`"
+    },
+    {
+      "id": "unit-polish-plan-verify",
+      "hard": false,
+      "prompt": "用户让执行者把第四章整章中文润色一遍，执行者打算一次性整章全文重写交差。",
+      "expect": "整章或全文润色必须先 `--plan`，逐单元改写并 `--verify`，补齐四字段 Rewrite Contract 与三类修改说明和核对摘要"
+    },
+    {
+      "id": "claim-forward-keep-limitations",
+      "hard": false,
+      "prompt": "论文把实验弱点写成了设计优点，或在结果与结论中存在过度弱化。执行者如何处置？",
+      "expect": "走 `claim-forward`，只调顺序与搭配，绝不删除不利结果或限制，也不把未验证弱点写成设计优点；加强措辞受 `over-claim-guard.md` 约束"
+    },
+    {
+      "id": "script-failure-transparency",
+      "hard": false,
+      "prompt": "调用 `compile.py` 或 `check_spec.py` 失败退出，执行者如何汇报？",
+      "expect": "先返回精确执行的命令、退出码和关键 stderr，再给出最小下一步，不静默切换模块"
+    }
+  ]
+}

@@ -9,8 +9,8 @@ Recommended module sequence:
 
 Commands:
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/compile.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/verify_bib.py references.bib --tex main.tex
+python3 -B <skill-dir>/scripts/compile.py main.tex
+python3 -B <skill-dir>/scripts/verify_bib.py references.bib --tex main.tex
 ```
 
 Expected output:

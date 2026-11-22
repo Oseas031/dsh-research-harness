@@ -95,7 +95,7 @@ Append these four fields to every rewrite block:
 ## Workflow
 
 1. Parse `$ARGUMENTS`, infer the smallest matching module, and keep that inference unless the user redirects.
-2. Read only the reference file for that module; run its script with `python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/<script>.py`.
+2. Read only the reference file for that module; run its script with `python3 -B <skill-dir>/scripts/<script>.py`.
 3. For multiple compatible concerns, run in routing order and group output by module.
 4. Summarize issues, fixes, and blockers in LaTeX-friendly comments; switch modules for new concerns instead of overloading one run.
 

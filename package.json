@@ -1,6 +1,6 @@
 {
   "name": "dsh-research-harness",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "main": "lib/index.js",
   "description": "科研工作台：证据守卫、台账、完成门禁、CLI、配对技能进化与 10 个科研技能",
@@ -24,7 +24,8 @@
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "test:protocol": "node harness-lab/protocol.mjs"
+    "test:protocol": "node harness-lab/protocol.mjs",
+    "test:e2e": "node harness-lab/lab.mjs harness-lab/scenarios/pipeline-e2e.mjs"
   },
   "engines": {
     "node": ">=22"

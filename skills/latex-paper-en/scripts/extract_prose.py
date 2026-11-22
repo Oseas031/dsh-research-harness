@@ -3,10 +3,10 @@
 Prose Extractor - Extract plain text from LaTeX/Typst for analysis
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/extract_prose.py main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/extract_prose.py main.tex --keep-structure
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/extract_prose.py main.tex --output prose.txt
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/extract_prose.py main.tex --keep-structure
+    python3 -B <skill-dir>/scripts/extract_prose.py main.tex
+    python3 -B <skill-dir>/scripts/extract_prose.py main.tex --keep-structure
+    python3 -B <skill-dir>/scripts/extract_prose.py main.tex --output prose.txt
+    python3 -B <skill-dir>/scripts/extract_prose.py main.tex --keep-structure
 """
 
 import argparse

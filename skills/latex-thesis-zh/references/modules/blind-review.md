@@ -34,7 +34,7 @@ R3 为扩展隐匿点（**常见惯例，以学校盲审通知为准**，非校�
 ## Primary Command
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/blind_review.py main.tex --check
+python3 <skill-dir>/scripts/blind_review.py main.tex --check
 ```
 
 - `--check`：定位泄露点，输出 findings（默认动作；存在 HIGH 时退出码 1）。

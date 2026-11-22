@@ -52,15 +52,35 @@ jobs:
             'docs/README.md',
             'instructions/RESEARCH.md',
             'scenarios/contract.mjs',
+            'skills/expectation-alignment/SKILL.md',
+            'skills/humanizer-paper/SKILL.md',
+            'skills/latex-paper-en/SKILL.md',
+            'skills/latex-thesis-zh/SKILL.md',
+            'skills/literature-search-arxiv/SKILL.md',
+            'skills/nature-polishing/SKILL.md',
+            'skills/qu-ai-wei/SKILL.md',
+            'skills/sci-figure/SKILL.md',
+            'skills/scientific-problem-selection/SKILL.md',
             'skills/validate-data/SKILL.md',
+            'evals/skills/expectation-alignment/rubric.md',
+            'evals/skills/humanizer-paper/rubric.md',
+            'evals/skills/latex-paper-en/rubric.md',
+            'evals/skills/latex-thesis-zh/rubric.md',
+            'evals/skills/literature-search-arxiv/rubric.md',
+            'evals/skills/nature-polishing/rubric.md',
+            'evals/skills/qu-ai-wei/rubric.md',
+            'evals/skills/sci-figure/rubric.md',
+            'evals/skills/scientific-problem-selection/rubric.md',
             'evals/skills/validate-data/rubric.md',
             'test/contract.test.mjs',
+            'test/v060.test.mjs',
             'harness-lab/README.md',
             'harness-lab/lab.mjs',
             'harness-lab/protocol.mjs',
             'harness-lab/runtime.mjs',
             'harness-lab/profile/cordis.yml',
             'harness-lab/scenarios/smoke.mjs',
+            'harness-lab/scenarios/pipeline-e2e.mjs',
           ])];
           const missing = required.filter(path => !packed.has(path));
           if (missing.length) throw new Error('Missing packed files: ' + missing.join(', '));
@@ -88,15 +108,17 @@ jobs:
             }
           }
 
-          const legacyBrand = /hack4claws|clawsgo/i;
+          const legacyBrand = /hack4claws|clawsgo|C:[\\/]+Users[\\/]+ASUS|E:[\\/]+dsh-research-harness|E:[\\/]+hack4clawsgo/i;
           const textExtensions = new Set(['.js', '.mjs', '.json', '.yml', '.yaml', '.md', '.txt', '.py']);
           for (const file of report.files) {
-            if (legacyBrand.test(file.path)) throw new Error('Legacy brand in path: ' + file.path);
+            if (legacyBrand.test(file.path) || file.path.includes('__pycache__')) {
+              throw new Error('Forbidden path in pack: ' + file.path);
+            }
             if (!textExtensions.has(extname(file.path)) && file.path !== 'LICENSE') continue;
             const text = readFileSync(file.path, 'utf8');
-            if (legacyBrand.test(text)) throw new Error('Legacy brand in file: ' + file.path);
+            if (legacyBrand.test(text)) throw new Error('Legacy brand or local path in file: ' + file.path);
           }
-          const generated = [...packed].filter(path => path.includes('/.research/') || path.includes('/.tmp-'));
+          const generated = [...packed].filter(path => path.includes('/.research/') || path.includes('/.evolve/') || path.includes('/.tmp-'));
           if (generated.length) throw new Error('Generated lab artifacts packed: ' + generated.join(', '));
           console.log('PACK PASS | ' + packed.size + ' files | required files and brand verified');
           NODE

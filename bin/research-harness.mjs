@@ -28,11 +28,17 @@ const USAGE = `用法: research-harness <command> [flags]
   evolve apply --name E --candidate proposal.json [--root DIR]
   evolve select --name E [--root DIR] [--ledger DIR]
   evolve log|verify|champion --name E [--root DIR]
+  version                                 输出包名与版本号（同 --version / -v）
 通用: --ledger DIR（缺省 ./.research 或 $RESEARCH_LEDGER）`;
 
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const args = process.argv.slice(2);
 const cmd = args[0];
-if (!cmd || cmd === 'help' || cmd === '--help') { console.log(USAGE); process.exit(cmd ? 0 : 1); }
+if (!cmd || cmd === 'help' || cmd === '--help' || cmd === '-h') { console.log(USAGE); process.exit(cmd ? 0 : 1); }
+if (cmd === 'version' || cmd === '--version' || cmd === '-v') {
+  console.log(JSON.stringify({ name: pkg.name, version: pkg.version }));
+  process.exit(0);
+}
 const flags = {};
 for (let i = 1; i < args.length; i++) {
   const a = args[i];

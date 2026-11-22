@@ -4,8 +4,8 @@ Use this optional diagnostic when the review question concerns paragraph opening
 adjacent interfaces, or underdeveloped paragraph bodies:
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --paragraph-arc
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_logic.py main.tex --paragraph-arc --section introduction
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-arc
+python3 -B <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-arc --section introduction
 ```
 
 `--paragraph-arc` is additive. Omitting it leaves the existing `logic` output byte-for-byte

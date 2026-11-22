@@ -8,8 +8,8 @@
 本脚本不查引用、字数上限、模糊措辞，报告尾注指路 spec-check。
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_conclusion.py main.tex
-    python3 -B E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_conclusion.py main.tex --json
+    python3 -B <skill-dir>/scripts/analyze_conclusion.py main.tex
+    python3 -B <skill-dir>/scripts/analyze_conclusion.py main.tex --json
 """
 
 from __future__ import annotations

@@ -6,10 +6,10 @@ Accepts the paper source for the host skill (``.tex`` for LaTeX skills,
 ``.typ`` for typst-paper).
 
 Usage:
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py <paper>
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py <paper> --lang en --max-words 250
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py <paper> --lang zh --max-chars 300
-    python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_abstract.py <paper> --json
+    python3 -B <skill-dir>/scripts/analyze_abstract.py <paper>
+    python3 -B <skill-dir>/scripts/analyze_abstract.py <paper> --lang en --max-words 250
+    python3 -B <skill-dir>/scripts/analyze_abstract.py <paper> --lang zh --max-chars 300
+    python3 -B <skill-dir>/scripts/analyze_abstract.py <paper> --json
 """
 
 import argparse

@@ -6,8 +6,8 @@
 ## 使用入口
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --paragraph-arc
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py main.tex --paragraph-arc --section introduction
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-arc
+python3 <skill-dir>/scripts/analyze_logic.py main.tex --paragraph-arc --section introduction
 ```
 
 `--paragraph-arc` 是附加开关；不传时默认 `logic` 输出不变。`--section` 只缩小到已有章节

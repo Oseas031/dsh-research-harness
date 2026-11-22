@@ -9,7 +9,7 @@
 先运行候选检查，再按本指南做语义复核：
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/analyze_logic.py document.tex --method-narrative --section 〈章名〉
+python3 <skill-dir>/scripts/analyze_logic.py document.tex --method-narrative --section 〈章名〉
 ```
 
 `--section` 每次只选择一个章。脚本结果均为候选，`Meaning-Check: NEEDS-LLM` 表示仍需结合

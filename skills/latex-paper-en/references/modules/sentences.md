@@ -5,9 +5,9 @@
 Trigger condition: Sentences >50 words OR >3 subordinate clauses
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_sentences.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_sentences.py main.tex --section introduction --max-words 45 --max-clauses 3
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/analyze_sentences.py main.tex --strength moderate
+python3 -B <skill-dir>/scripts/analyze_sentences.py main.tex
+python3 -B <skill-dir>/scripts/analyze_sentences.py main.tex --section introduction --max-words 45 --max-clauses 3
+python3 -B <skill-dir>/scripts/analyze_sentences.py main.tex --strength moderate
 ```
 
 `--goal` (default `grammar`) and `--strength` (default `minimal`) declare the edit envelope; see [routing-rules.md](routing-rules.md). Splitting a sentence is a structural edit, so under `--strength minimal` the proposal is still shown but the rationale says it needs `moderate` or higher before anyone applies it. `--goal coherence` routes to `logic`.

@@ -7,9 +7,9 @@
 ## Commands
 
 ```bash
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_claim_forward.py main.tex
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_claim_forward.py main.tex --section introduction
-python3 -B E:/dsh-research-harness/skills/latex-paper-en/scripts/check_claim_forward.py main.tex --section conclusion --json
+python3 -B <skill-dir>/scripts/check_claim_forward.py main.tex
+python3 -B <skill-dir>/scripts/check_claim_forward.py main.tex --section introduction
+python3 -B <skill-dir>/scripts/check_claim_forward.py main.tex --section conclusion --json
 ```
 
 `--section` accepts the same keys and aliases as the other modules (`introduction`, `contribution`, `results`, `discussion`, `conclusion`, ...). Without `--section` every detected section is scanned. Exit code is always 0; an unknown section prints an `ERROR` line listing the available keys.

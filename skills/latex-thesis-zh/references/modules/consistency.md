@@ -36,9 +36,9 @@ These are `[LLM]` or author checks. The consistency script does not establish ma
 ## Detection Approach
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --terms
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --abbreviations
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex
+python3 <skill-dir>/scripts/check_consistency.py main.tex --terms
+python3 <skill-dir>/scripts/check_consistency.py main.tex --abbreviations
+python3 <skill-dir>/scripts/check_consistency.py main.tex
 ```
 
 - `--terms`: Counts configured surface forms and reports naming or optional full-form style candidates. It does not prove synonymy or detect all capitalization inconsistencies.
@@ -56,8 +56,8 @@ Default behavior changes correct false positives and false passes: distinct conc
 These checks stay off unless a flag is present. Without `--governance` or `--abbreviation-style`, the existing `--terms`, `--abbreviations`, and full-report output stay unchanged. `--governance` requires `--custom-terms` and extends the same JSON object. It does not add a second file, a schema version, or a migration layer. `zh` and `en` groups keep the existing loader. `banned`, `locked`, and `exempt` are read only when `--governance` is on.
 
 ```bash
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --governance --custom-terms terms.json
-python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_consistency.py main.tex --abbreviation-style
+python3 <skill-dir>/scripts/check_consistency.py main.tex --governance --custom-terms terms.json
+python3 <skill-dir>/scripts/check_consistency.py main.tex --abbreviation-style
 ```
 
 ```json

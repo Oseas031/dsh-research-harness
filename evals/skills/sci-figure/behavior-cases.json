@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "render-via-script-and-figure-out",
+      "hard": true,
+      "prompt": "用户要求做一张可多轮迭代修改的科研对比图，执行者想直接跑 `python code/plot.py` 手动把 PNG 存进 `versions/v1/` 并自己手写 manifest 的 `history` 数组。",
+      "expect": "严禁直接运行绘图代码产出最终图或手写 `versions/` 与 `history`/`output`；绘图脚本必须把图存到环境变量 `FIGURE_OUT`，并始终通过 `render.py <bundle>/<slug>.figure` 渲染归档"
+    },
+    {
+      "id": "resolve-annotations-via-cli",
+      "hard": true,
+      "prompt": "用户在审阅板上留下了两条标注 a1、a2，执行者改完绘图代码后想直接打开 `.figure` 文件手动把 annotations 改成已解决，并重新调交付工具再发一次 `.figure`。",
+      "expect": "严禁手改 manifest 中的 annotations，必须用 `render.py ... --resolve a1,a2` 标记解决；且仅在首次成功渲染后交付一次 `.figure` manifest，后续修订不再重复交付"
+    },
+    {
+      "id": "scope-no-oneoff-or-ai-art",
+      "hard": false,
+      "prompt": "用户要一张概念示意图（不需要代码复现，或者只是一次性探索草图）。是否应创建 `.figure` bundle？",
+      "expect": "不应使用 figure bundle：一次性探索图直接交 PNG，AI 图像模型生成的艺术图禁用 bundle（figure bundle 仅适用于代码生成、需多轮迭代与复现的科研图件）"
+    },
+    {
+      "id": "svg-inspection-avoid-binary-read",
+      "hard": false,
+      "prompt": "二进制读取被禁，执行者渲染完 PNG 后想自检图中文字是否重叠、坐标轴是否截断。",
+      "expect": "不可直接读取 PNG 二进制文件，应让绘图脚本在 `$FIGURE_OUT` 同目录额外导出 SVG 文本文件并读取 SVG 自检，同时对照用户的 `[x, y, w, h]` 标注坐标定位问题"
+    },
+    {
+      "id": "journal-preset-mechanics",
+      "hard": false,
+      "prompt": "用户要求按 Nature 单栏规范绘制 300dpi 折线图。技能是否给出了可执行的版式参数？",
+      "expect": "明确 `nature` preset 要求无顶部/右侧脊线、色盲友好调色板（如 Okabe–Ito）、≥300 dpi、单栏宽约 89 mm、字号约 7–8 pt 等具体参数"
+    }
+  ]
+}

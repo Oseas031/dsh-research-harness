@@ -1,6 +1,6 @@
 # dsh-research-harness — 当前机制与文件契约
 
-> **当前版本：v0.5.0。本文件是机制、目录与数据契约的真相源。**
+> **当前版本：v0.6.0。本文件是机制、目录与数据契约的真相源。**
 > 新用户安装与 Quickstart 见 [根 README](../README.md)；版本变化见 [CHANGELOG](../CHANGELOG.md)。
 
 dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：**技能是库存，证据契约是产品。**
@@ -68,7 +68,7 @@ init 冻结契约与 evaluator_id
 
 ## 目录与模块
 
-- `lib/index.js` — 插件入口，注册 findings 工具、守卫、子代理审计监听与技能 provider。
+- `lib/index.js` — 插件入口，从 `package.json` 动态读取版本号，注册 9 个 `findings.*` 工具（含 `findings.unknown`/`findings.resolve` 与对齐 `acceptance` 的 `findings.route`）、守卫、子代理审计监听与技能 provider。
 - `lib/guards.js` — 守卫纯函数与统一 `check()` 入口。
 - `lib/evidence-gate.js` — provenance 校验、`findings.record` 门控与子代理报告审计。
 - `lib/ledger.js` — 追加式台账、unknown 会计、task、软门禁跳过与统计。
@@ -79,12 +79,12 @@ init 冻结契约与 evaluator_id
 - `lib/ingest.js` — 报告 `findings` 块解析、入账和验证状态升级。
 - `lib/evolve.js` — 技能提案、surface 保护、冻结评估器、配对评审、回滚与谱系收据。
 - `lib/skill-provider.js` — 自定位 `skills/` 并注册 10 个科研技能，不依赖硬编码绝对路径。
-- `bin/research-harness.mjs` — 独立 CLI，与插件共用核心实现。
+- `bin/research-harness.mjs` — 独立 CLI，与插件共用核心实现（支持 `--version` / `-v` / `version`）。
 - `instructions/RESEARCH.md` — 研究纪律全文。
-- `evals/skills/` — 进化前冻结的行为案例与 rubric。
-- `skills/` — 10 个科研技能；各技能的权威说明位于自己的 `SKILL.md`。
+- `evals/skills/` — 10 个科研技能的冻结行为案例与 rubric。
+- `skills/` — 10 个科研技能；各技能的权威说明位于自己的 `SKILL.md`（无硬编码本机路径，`sci-figure/render.py` 使用 `sys.executable`）。
 - `test/` — `node:test` 单测与 mock-ctx 契约测试。
-- `harness-lab/` — 真实 cordis/ToolsService/SystemPrompt 契约层验收环境。
+- `harness-lab/` — 真实 cordis/ToolsService/SystemPrompt 契约层与端到端产物流水线验收环境（含 `scenarios/pipeline-e2e.mjs`）。
 
 ## 数据与收据位置
 

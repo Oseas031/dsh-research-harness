@@ -3,8 +3,8 @@
 LaTeX Format Checker (Chinese) - chktex wrapper with Chinese support
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_format.py main.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_format.py main.tex --strict
+    python3 <skill-dir>/scripts/check_format.py main.tex
+    python3 <skill-dir>/scripts/check_format.py main.tex --strict
 """
 
 import argparse

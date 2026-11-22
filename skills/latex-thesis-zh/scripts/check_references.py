@@ -6,8 +6,8 @@ Extends the single-file checker with multi-file support via \\input{} and \\incl
 Resolves included files relative to the main file's directory.
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_references.py main.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/check_references.py main.tex --json
+    python3 <skill-dir>/scripts/check_references.py main.tex
+    python3 <skill-dir>/scripts/check_references.py main.tex --json
 """
 
 from __future__ import annotations

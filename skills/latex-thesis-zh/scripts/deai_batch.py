@@ -4,9 +4,9 @@ De-AI Batch Processor for Chinese Academic Theses
 Batch processes entire LaTeX/Typst chapters or documents.
 
 Usage:
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_batch.py main.tex --chapter chapter3/introduction.tex
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_batch.py main.tex --all-sections
-    python3 E:/dsh-research-harness/skills/latex-thesis-zh/scripts/deai_batch.py main.tex --section introduction --output polished/
+    python3 <skill-dir>/scripts/deai_batch.py main.tex --chapter chapter3/introduction.tex
+    python3 <skill-dir>/scripts/deai_batch.py main.tex --all-sections
+    python3 <skill-dir>/scripts/deai_batch.py main.tex --section introduction --output polished/
 """
 
 import argparse
