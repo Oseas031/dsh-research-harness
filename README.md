@@ -2,7 +2,13 @@
 
 面向 DSH 的科研工作台：把证据守卫、追加式台账、完成门禁、最短路径路由和 10 个科研技能装进独立「科研 Harness」预设。**技能是库存，证据契约是产品。**
 
-当前仓库版本：**v0.8.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
+当前仓库版本：**v0.8.1**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
+
+## v0.8.1 安全与可靠性加固
+
+- **守卫防绕过（P0）**：`guardPathEscape()` 基于 `realpathSync()` 沿祖先链解析符号链接与 Windows Junction，阻断工作区外逃逸；`guardBinaryRead()` 先 `trim()` 再取 `extname()` 消除尾部空格绕过；同步匹配 DSH 真实 `apply_patch`（`input`）与 `str_replace_editor`（`view|create|str_replace|insert`）工具契约；扩展 `subagent`/`agent` 的 `cwd` 越界校验与禁用工具列表；新增可选 `enforceReadInsideWorkspace: true` 严格模式。
+- **门禁与 provenance 闭合（P0）**：`completionGate` 在 `gate-skip` 覆盖所有未决 blocker 后仍运行 `verifier.verify`（并传 `workspaceRoot`）并落 `completion-attempt` 重置按 `task` 计数的失败修复轮数；`validateProvenance()` 与 `verifyFileProvenance()` 递归解析 `report:<source> | <inner>`（拒绝 `(report 未标 provenance)` 等占位文本），强制工作区内路径与 20MB 上限；`skill-provider.get()` 校验证书目录逃逸；`surfaceViolation()` 大小写不敏感拦截排除目录，`Evolver.rollback()` 复验 `evaluator_id` 与修改面约束。
+- **稳定性与编码兼容（P1）**：`verifyLedger` 兼容 Windows CRLF 换行而不误报 `drifted`；`validateChallenge()` 复用完整 `validateProvenance()`；`Ledger` 强校验 `repro` 与 `addUnknown()` 分类枚举；`spans.js` 对内联 `Bearer` / GitHub token / `sk-` / URL 凭据脱敏；`compile.py` 增 `--timeout` 超时回收（退出码 `124`）与 `MIKTEX_AUTOINSTALL=no`；CLI JSON 读取自动剥离 UTF-8 BOM。
 
 ## v0.8.0 能做什么
 

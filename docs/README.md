@@ -1,6 +1,6 @@
 # dsh-research-harness — 当前机制与文件契约
 
-> **当前版本：v0.8.0。本文件是机制、目录与数据契约的真相源。**
+> **当前版本：v0.8.1。本文件是机制、目录与数据契约的真相源。**
 > 新用户安装与 Quickstart 见 [根 README](../README.md)；版本变化见 [CHANGELOG](../CHANGELOG.md)。
 
 dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：**技能是库存，证据契约是产品。**

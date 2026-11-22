@@ -29,6 +29,7 @@ Recipes (matching VS Code LaTeX Workshop):
 """
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -86,12 +87,19 @@ class LaTeXCompiler:
         compiler: Optional[str] = None,
         recipe: Optional[str] = None,
         shell_escape: bool = False,
+        timeout: int = 180,
     ):
         self.tex_file = Path(tex_file).resolve()
         self.work_dir = self.tex_file.parent
         self.compiler = compiler or self._detect_compiler()
         self.recipe = recipe
         self.shell_escape = shell_escape
+        self.timeout = timeout
+
+    def _run_env(self) -> dict[str, str]:
+        env = dict(os.environ)
+        env.setdefault("MIKTEX_AUTOINSTALL", "no")
+        return env
 
     def _detect_compiler(self) -> str:
         """Auto-detect appropriate compiler based on document content."""
@@ -243,11 +251,15 @@ class LaTeXCompiler:
         cmd.append(str(self.tex_file))
 
         # Run compilation
+        run_timeout = None if (watch or self.timeout is None or self.timeout <= 0) else self.timeout
         try:
             result = subprocess.run(
                 cmd,
                 cwd=self.work_dir,
                 capture_output=False,
+                stdin=subprocess.DEVNULL,
+                env=self._run_env(),
+                timeout=run_timeout,
             )
             if result.returncode == 0:
                 pdf_file = self.tex_file.with_suffix(".pdf")
@@ -256,6 +268,12 @@ class LaTeXCompiler:
                 print(f"\n[ERROR] Compilation failed with exit code {result.returncode}")
             return result.returncode
 
+        except subprocess.TimeoutExpired:
+            print(
+                f"\n[ERROR] Compilation timed out after {self.timeout}s "
+                "(check missing TeX packages or infinite loops; MIKTEX_AUTOINSTALL=no)."
+            )
+            return 124
         except KeyboardInterrupt:
             print("\n[INFO] Compilation stopped by user")
             return 0
@@ -321,11 +339,15 @@ class LaTeXCompiler:
                 print(f"[ERROR] Unknown step: {step}")
                 return 1
 
+            run_timeout = None if (self.timeout is None or self.timeout <= 0) else self.timeout
             try:
                 result = subprocess.run(
                     cmd,
                     cwd=self.work_dir,
                     capture_output=False,
+                    stdin=subprocess.DEVNULL,
+                    env=self._run_env(),
+                    timeout=run_timeout,
                 )
                 if result.returncode != 0:
                     # bibtex/biber may return non-zero for warnings, continue anyway
@@ -335,6 +357,12 @@ class LaTeXCompiler:
                     else:
                         print(f"[WARNING] {step} returned {result.returncode}, continuing...")
 
+            except subprocess.TimeoutExpired:
+                print(
+                    f"[ERROR] Step {step} timed out after {self.timeout}s "
+                    "(check missing TeX packages or infinite loops; MIKTEX_AUTOINSTALL=no)."
+                )
+                return 124
             except FileNotFoundError:
                 print(f"[ERROR] {step} not found. Please install it.")
                 return 1
@@ -459,6 +487,12 @@ Examples:
     parser.add_argument(
         "--outdir", "-o", help="Output directory for generated files (latexmk only)"
     )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=180,
+        help="Per-step compilation timeout in seconds (default: 180; 0 disables timeout)",
+    )
 
     args = parser.parse_args()
 
@@ -484,6 +518,7 @@ Examples:
         args.compiler,
         args.recipe,
         shell_escape=args.shell_escape,
+        timeout=args.timeout,
     )
 
     # Watch mode is a latexmk feature; recipe-based compilation runs fixed steps

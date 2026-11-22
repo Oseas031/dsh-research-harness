@@ -436,6 +436,124 @@ try {
     rmSync(p10Ws, { recursive: true, force: true });
   }
 
+  // ---- P11: v0.8.1 安全与契约加固（真实 apply_patch input / str_replace_editor / ingest-complete 闭环）----
+  const p11Ws = mkdtempSync(join(tmpdir(), 'dsh-research-harness-p11-'));
+  try {
+    writeFileSync(join(p11Ws, 'p11-target.txt'), 'baseline\n', 'utf8');
+
+    const p11PatchDeny = ctx.tools.checkGuards({
+      name: 'apply_patch',
+      cwd: p11Ws,
+      arguments: { input: '*** Begin Patch\n*** Add File: ../p11-evil.txt\n*** End Patch' },
+    });
+    const p11PatchAllow = ctx.tools.checkGuards({
+      name: 'apply_patch',
+      cwd: p11Ws,
+      arguments: { input: '*** Begin Patch\n*** Add File: p11-ok.txt\n*** End Patch' },
+    });
+    const p11EditorDeny = ctx.tools.checkGuards({
+      name: 'str_replace_editor',
+      cwd: p11Ws,
+      arguments: { command: 'str_replace', path: join(LEDGER_DIR, 'evil.txt') },
+    });
+    const p11EditorAllow = ctx.tools.checkGuards({
+      name: 'str_replace_editor',
+      cwd: p11Ws,
+      arguments: { command: 'view', path: join(p11Ws, 'p11-target.txt') },
+    });
+    step('P11 真实 DSH apply_patch(input) 与 str_replace_editor 守卫',
+      p11PatchDeny?.info?.code === 'WRITE_OUTSIDE_WORKSPACE'
+      && p11PatchAllow === undefined
+      && p11EditorDeny?.info?.code === 'WRITE_OUTSIDE_WORKSPACE'
+      && p11EditorAllow === undefined,
+      'patch=' + p11PatchDeny?.info?.code + ' editor=' + p11EditorDeny?.info?.code);
+
+    const p11IsoSubWs = join(p11Ws, 'ws');
+    const p11IsoLedger = join(p11Ws, 'ledger');
+    const p11Profile = join(p11Ws, 'p11-cordis.yml');
+    mkdirSync(p11IsoSubWs, { recursive: true });
+    writeFileSync(join(p11Ws, 'outside.txt'), 'secret-outside\n', 'utf8');
+    writeFileSync(p11Profile, [
+      '- id: system-prompt',
+      "  name: '@deepseek-ai/dsh-system-prompt'",
+      '- id: tools',
+      "  name: '@deepseek-ai/dsh-tools'",
+      '- id: skill',
+      "  name: '@deepseek-ai/dsh-skill'",
+      '- id: research-harness-core',
+      '  name: ' + JSON.stringify(join(REPO_ROOT, 'lib', 'index.js')),
+      '  config:',
+      '    clusterScale: delegate',
+      '    ledgerRoot: ' + JSON.stringify(p11IsoLedger),
+      '    workspaceRoot: ' + JSON.stringify(p11IsoSubWs),
+      '    enforceReadInsideWorkspace: true',
+      '    verifier:',
+      '      kind: evidence',
+      '      enabled: true',
+      '      checkFileExists: true',
+    ].join('\n') + '\n', 'utf8');
+
+    let ctxP11;
+    try {
+      ctxP11 = await lab.boot('harness-lab-p11', p11Profile, [], undefined, lab.bareModuleBaseUrl);
+      const defsP11 = ctxP11.tools.definitions(undefined);
+      const ingP11 = defsP11.find(d => d.name === 'findings.ingest');
+      const mvP11 = defsP11.find(d => d.name === 'findings.mark-verified');
+
+      const p11ReadDeny = ctxP11.tools.checkGuards({
+        name: 'read',
+        cwd: p11IsoSubWs,
+        arguments: { filePath: join(p11Ws, 'outside.txt') },
+      });
+
+      const ingOk1 = await ingP11.execute({
+        source: 'p11-sub',
+        task: 'TASK-1101',
+        markdown: '```findings\n[{"claim":"P11 子报告引用数据文件","confidence":"observed","provenance":"p11-data.csv:1"}]\n```\n',
+      }, { name: 'findings.ingest', cwd: p11IsoSubWs });
+
+      const p11CompleteDenyMissing = ctxP11.tools.checkGuards({
+        name: 'update_goal',
+        cwd: p11IsoSubWs,
+        arguments: { action: 'complete' },
+      });
+
+      writeFileSync(join(p11IsoSubWs, 'p11-data.csv'), 'x\n1\n', 'utf8');
+      const mv11 = await mvP11.execute({ id: ingOk1.ids[0], note: 'P11 文件已落盘核验' }, { name: 'findings.mark-verified', cwd: p11IsoSubWs });
+      const p11CompletePass = ctxP11.tools.checkGuards({
+        name: 'update_goal',
+        cwd: p11IsoSubWs,
+        arguments: { action: 'complete' },
+      });
+
+      await ingP11.execute({
+        source: 'p11-empty',
+        task: 'TASK-1102',
+        markdown: '```findings\n[{"claim":"P11 无来源子报告占位应被拦截","confidence":"observed"}]\n```\n',
+      }, { name: 'findings.ingest', cwd: p11IsoSubWs });
+      const p11CompleteDenyPlaceholder = ctxP11.tools.checkGuards({
+        name: 'update_goal',
+        cwd: p11IsoSubWs,
+        arguments: { action: 'complete' },
+      });
+
+      step('P11 enforceReadInsideWorkspace + report:<source> file provenance + 无标占位拒绝闭环',
+        p11ReadDeny?.info?.code === 'READ_OUTSIDE_WORKSPACE'
+        && p11CompleteDenyMissing?.info?.code === 'EVIDENCE_VERIFY_FAILED'
+        && mv11?.status === 'lead-verified'
+        && p11CompletePass === undefined
+        && p11CompleteDenyPlaceholder?.info?.code === 'EVIDENCE_VERIFY_FAILED',
+        'read=' + p11ReadDeny?.info?.code
+          + ' missing=' + p11CompleteDenyMissing?.info?.code
+          + ' pass=' + String(p11CompletePass)
+          + ' placeholder=' + p11CompleteDenyPlaceholder?.info?.code);
+    } finally {
+      try { await ctxP11?.fiber?.dispose(); } catch {}
+    }
+  } finally {
+    rmSync(p11Ws, { recursive: true, force: true });
+  }
+
   // ---- verdict ----
   const fails = results.filter(r => !r.pass);
   console.log('\n===== harness-lab 验收: ' + (results.length - fails.length) + '/' + results.length + ' =====');

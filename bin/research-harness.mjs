@@ -58,6 +58,7 @@ for (let i = 1; i < args.length; i++) {
   if (v !== undefined && !v.startsWith('--')) { flags[a.slice(2)] = v; i++; } else { flags[a.slice(2)] = true; }
 }
 const need = (k) => { if (typeof flags[k] !== 'string' || !flags[k].trim()) { console.error('缺参数 --' + k + '\n' + USAGE); process.exit(1); } return flags[k]; };
+const readJsonFile = (p) => JSON.parse(readFileSync(resolve(p), 'utf8').replace(/^\uFEFF/, ''));
 const out = (o) => console.log(JSON.stringify(o, null, 2));
 
 const dir = flags.ledger ? resolve(flags.ledger) : (process.env.RESEARCH_LEDGER ? resolve(process.env.RESEARCH_LEDGER) : resolve('.research'));
@@ -96,7 +97,7 @@ try {
     }
     case 'route': {
       let acceptance;
-      if (typeof flags.acceptance === 'string') acceptance = JSON.parse(readFileSync(resolve(flags.acceptance), 'utf8'));
+      if (typeof flags.acceptance === 'string') acceptance = readJsonFile(flags.acceptance);
       const taskKey = typeof flags.task === 'string' && flags.task.trim()
         ? flags.task.trim()
         : (acceptance?.task ?? 'default');
@@ -131,7 +132,7 @@ try {
       const sub = args[1];
       if (sub === 'save') {
         const wsRoot = flags.root ? resolve(flags.root) : process.cwd();
-        const card = JSON.parse(readFileSync(resolve(need('file')), 'utf8'));
+        const card = readJsonFile(need('file'));
         const written = writeAlignmentCard(wsRoot, card);
         let synced = null;
         if (flags.sync === true || flags.sync === 'true') {

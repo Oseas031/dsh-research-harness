@@ -78,6 +78,7 @@ jobs:
             'test/v060.test.mjs',
             'test/v070.test.mjs',
             'test/v080.test.mjs',
+            'test/v081.test.mjs',
             'harness-lab/README.md',
             'harness-lab/lab.mjs',
             'harness-lab/protocol.mjs',

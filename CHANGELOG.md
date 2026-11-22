@@ -2,6 +2,24 @@
 
 本文件记录仓库版本变化。版本号本身不表示 npm 发布或远端 CI 状态；二者以各自的实际记录为准。
 
+## [0.8.1]
+
+### Security & Reliability (P0)
+
+- `lib/guards.js`：`guardPathEscape()` 引入 `realpathSync()` 祖先链 解析，拦截经由符号链接/Junction 的工作区逃逸；`guardBinaryRead()` 改用 `trim()` + `extname()` 阻断尾部空格绕过；对齐 DSH 真实 `apply_patch`（`input`）与新增 `str_replace_editor`（`view|create|str_replace|insert`）守卫；`subagent`/`agent` 扩充 `FORBIDDEN_CHILD_TOOLS` 并校验 `cwd` 越界。
+- `lib/completion.js`：移除全量 `gate-skip` 覆盖后的提前 `return null`，继续执行 `verifier.verify(ledger, verifyOpts)` 防止绕过 provenance/文件校验，并在通过时写入 `completion-attempt`（`complete` 或 `complete-with-skips`）以联动重置任务 `repairRounds`。
+- `lib/evolve.js`：`surfaceViolation()` 对 `IMPLICIT_EXCLUDES` 采用大小写不敏感匹配，阻断 Windows/macOS 大小写绕过；`Evolver.rollback()` 回写前校验 `evaluator_id` 未漂移且每个目标文件均合法属于 `contract.surface`。
+- `lib/skill-provider.js`：`provider.get()` 使用 `realpathSync` 强制校验技能文件位于 `skillsDir` 内，拒绝目录逃逸并返回 `undefined`。
+- `lib/evidence-gate.js`、`lib/verifier.js` 与 `lib/index.js`：`validateProvenance()` 支持递归校验 `report:<source> | <inner>`（拒绝 `(report 未标 provenance)` 等占位）；`verifyFileProvenance()` 解包 `report:` 前缀、强制校验工作区内边界与 20MB 文件上限；`lib/index.js` 新增 `enforceReadInsideWorkspace` 开关并向 `completionGate` 透传 `verifyOpts: { workspaceRoot }`。
+
+### Fixed (P1)
+
+- `lib/receipts.js`：`receiptOf()` 与 `verifyLedger()` 兼容 Windows CRLF（`\r\n`）换行，防止换行转换引起误报 `drifted`（同时保持尾随空格篡改可检出）。
+- `lib/challenge.js`、`lib/repro.js`、`lib/ledger.js`：`validateChallenge()` 接入 `validateProvenance()`；`validateRepro()` 拒绝非字符串 `subject_digest`；`Ledger.record()` 校验 `repro`，`Ledger.addUnknown()` 强校验 `classification` ∈ `['blocker', 'non-blocker', 'parameterizable']`。
+- `lib/spans.js`：为 `redactValue()` 与 `summarizeInput()` 补充字符串内联脱敏（`Bearer`、`ghp_/gho_/ghu_/ghs_/github_pat_`、`sk-`、带密码的 URL）。
+- `skills/latex-paper-en/scripts/compile.py` 与 `skills/latex-thesis-zh/scripts/compile.py`：新增 `--timeout`（默认 180 秒，超时退出码 `124`）、`stdin=DEVNULL` 及默认 `MIKTEX_AUTOINSTALL=no`。
+- `bin/research-harness.mjs`：通过 `readJsonFile()` 剥离 `--acceptance` 与 `alignment save --file` 输入 JSON 的 UTF-8 BOM。
+
 ## [0.8.0]
 
 ### Added

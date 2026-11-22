@@ -25,6 +25,7 @@ Recipes (中文论文推荐 XeLaTeX/LuaLaTeX):
 """
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -86,12 +87,19 @@ class LaTeXCompiler:
         compiler: Optional[str] = None,
         recipe: Optional[str] = None,
         shell_escape: bool = False,
+        timeout: int = 180,
     ):
         self.tex_file = Path(tex_file).resolve()
         self.work_dir = self.tex_file.parent
         self.compiler = compiler or self._detect_compiler()
         self.recipe = recipe
         self.shell_escape = shell_escape
+        self.timeout = timeout
+
+    def _run_env(self) -> dict[str, str]:
+        env = dict(os.environ)
+        env.setdefault("MIKTEX_AUTOINSTALL", "no")
+        return env
 
     def _detect_compiler(self) -> str:
         """Auto-detect appropriate compiler based on document content."""
@@ -233,11 +241,15 @@ class LaTeXCompiler:
         cmd.append(str(self.tex_file))
 
         # Run compilation
+        run_timeout = None if (watch or self.timeout is None or self.timeout <= 0) else self.timeout
         try:
             result = subprocess.run(
                 cmd,
                 cwd=self.work_dir,
                 capture_output=False,
+                stdin=subprocess.DEVNULL,
+                env=self._run_env(),
+                timeout=run_timeout,
             )
             if result.returncode != 0:
                 print(f"\n[ERROR] Compilation failed with exit code {result.returncode}")
@@ -248,6 +260,12 @@ class LaTeXCompiler:
             print(f"\n[SUCCESS] PDF generated: {pdf_file}")
             return 0
 
+        except subprocess.TimeoutExpired:
+            print(
+                f"\n[ERROR] Compilation timed out after {self.timeout}s "
+                "(请检查缺失宏包或循环引用；已默认启用 MIKTEX_AUTOINSTALL=no)."
+            )
+            return 124
         except KeyboardInterrupt:
             print("\n[INFO] Compilation stopped by user")
             return 0
@@ -325,11 +343,15 @@ class LaTeXCompiler:
                     cmd.append(f"-outdir={pdf_file.parent}")
                 cmd.append(str(self.tex_file))
 
+            run_timeout = None if (self.timeout is None or self.timeout <= 0) else self.timeout
             try:
                 result = subprocess.run(
                     cmd,
                     cwd=self.work_dir,
                     capture_output=False,
+                    stdin=subprocess.DEVNULL,
+                    env=self._run_env(),
+                    timeout=run_timeout,
                 )
                 if result.returncode != 0:
                     # bibtex/biber may return non-zero for warnings, continue anyway
@@ -339,6 +361,12 @@ class LaTeXCompiler:
                     else:
                         print(f"[WARNING] {step} returned {result.returncode}, continuing...")
 
+            except subprocess.TimeoutExpired:
+                print(
+                    f"[ERROR] Step {step} timed out after {self.timeout}s "
+                    "(请检查缺失宏包或循环引用；已默认启用 MIKTEX_AUTOINSTALL=no)."
+                )
+                return 124
             except FileNotFoundError:
                 print(f"[ERROR] {step} not found. Please install it.")
                 return 1
@@ -444,6 +472,12 @@ Examples:
     parser.add_argument(
         "--outdir", "-o", help="输出目录 (相对源文件目录；支持 latexmk recipe 或 --compiler)"
     )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=180,
+        help="单步编译超时时间（秒，默认 180；传 0 不限时）",
+    )
 
     args = parser.parse_args()
 
@@ -469,6 +503,7 @@ Examples:
         args.compiler,
         args.recipe,
         shell_escape=args.shell_escape,
+        timeout=args.timeout,
     )
 
     # Execute requested action
