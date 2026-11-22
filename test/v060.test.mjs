@@ -40,12 +40,12 @@ test('v0.6.0 版本对齐：PKG_VERSION、wired 日志与 CLI --version 一致',
       on() { return () => {}; },
     };
     apply(ctx, { ledgerRoot: root, clusterScale: 'delegate' });
-    assert.equal(tools.length, 9);
+    assert.equal(tools.length, 13);
     const guardLog = readFileSync(join(root, 'guard-log.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
     const wired = guardLog.find(e => e.kind === 'wired');
     assert.ok(wired);
     assert.equal(wired.version, pkg.version);
-    assert.equal(wired.tools.length, 9);
+    assert.equal(wired.tools.length, 13);
 
     for (const flag of ['--version', '-v', 'version']) {
       const r = spawnSync(process.execPath, [BIN, flag], { encoding: 'utf8' });

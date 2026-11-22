@@ -1,6 +1,6 @@
 # dsh-research-harness — 当前机制与文件契约
 
-> **当前版本：v0.7.0。本文件是机制、目录与数据契约的真相源。**
+> **当前版本：v0.8.0。本文件是机制、目录与数据契约的真相源。**
 > 新用户安装与 Quickstart 见 [根 README](../README.md)；版本变化见 [CHANGELOG](../CHANGELOG.md)。
 
 dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：**技能是库存，证据契约是产品。**
@@ -68,16 +68,18 @@ init 冻结契约与 evaluator_id
 
 ## 目录与模块
 
-- `lib/index.js` — 插件入口，从 `package.json` 动态读取版本号，注册 9 个 `findings.*` 工具（含 `findings.unknown`/`findings.resolve` 与对齐 `acceptance` 的 `findings.route`）、守卫、子代理审计监听与技能 provider。
+- `lib/index.js` — 插件入口，从 `package.json` 动态读取版本号，注册 13 个契约工具（含 `findings.unknown`/`findings.resolve`、`findings.ingest`/`findings.mark-verified`、`findings.spans`、`alignment.record` 与对齐 `acceptance` 的 `findings.route`）、守卫、`tools/result` Span 监听、子代理审计监听与技能 provider。
 - `lib/guards.js` — 守卫纯函数与统一 `check()` 入口。
-- `lib/evidence-gate.js` — provenance 校验、`findings.record` 门控与子代理报告审计。
-- `lib/ledger.js` — 追加式台账、unknown 会计、task、软门禁跳过与统计。
+- `lib/evidence-gate.js` — provenance 校验、file:line 存在性/行号核查（`verifyFileProvenance`）、`findings.record` 门控与子代理报告审计。
+- `lib/ledger.js` — 追加式台账、unknown 会计、task、按任务持久化 `repair-attempt`、软门禁跳过与统计。
 - `lib/receipts.js` — Ledger 行级 SHA-256 收据及漂移核对。
 - `lib/completion.js` — blocker 完成门禁与 inconclusive 通道。
-- `lib/route.js` — 最短路径路由、验收充分性与修复轮上限。
-- `lib/verifier.js` — 可插拔校验器；默认 evidence 复验，保留 command 接口。
-- `lib/ingest.js` — 报告 `findings` 块解析、入账和验证状态升级。
-- `lib/evolve.js` — 技能提案、surface 保护、冻结评估器、配对评审、回滚与谱系收据。
+- `lib/route.js` — 最短路径路由、验收充分性与按任务持久化修复轮上限。
+- `lib/verifier.js` — 可插拔校验器；`evidence` 支持 `maxAgeHours` 时效降档与 `checkFileExists`，`command` 支持安全异步执行。
+- `lib/ingest.js` — 报告 `findings` 块解析、入账（`ingestMarkdown`/`ingestReport`）和验证状态升级。
+- `lib/spans.js` — 回合级工具调用脱敏 Span 记录器与耗时聚合。
+- `lib/alignment.js` — 6 层结构化预期对齐卡校验、`Markdown` 无损持久化和台账同步。
+- `lib/evolve.js` — 技能提案、surface 保护、冻结评估器、隔离异步评审（`runEvaluator`）、回滚（`rollback`）与谱系收据。
 - `lib/skill-provider.js` — 自定位 `skills/` 并注册 10 个科研技能，不依赖硬编码绝对路径。
 - `bin/research-harness.mjs` — 独立 CLI，与插件共用核心实现（支持 `--version` / `-v` / `version`）。
 - `instructions/RESEARCH.md` — 研究纪律全文。
@@ -94,7 +96,7 @@ init 冻结契约与 evaluator_id
 | CLI | 当前工作目录的 `./.research` | `--ledger DIR` > `RESEARCH_LEDGER` > 默认值 |
 | 进化实验 | `<root>/.evolve/<name>/` | `--root DIR`；缺省为 CLI 所在包根目录 |
 
-Ledger 根目录包含 `ledger.jsonl`、`ledger-receipts.jsonl`、`guard-log.jsonl` 与跨进程写入锁 `.ledger.lock`（自动回收僵尸锁）。进化目录包含 `contract.json`、`archive.jsonl`、`archive-receipts.jsonl`、`gens/`、`packets/`、`verdicts/`、`backups/`。
+Ledger 根目录包含 `ledger.jsonl`、`ledger-receipts.jsonl`、`guard-log.jsonl`、`spans.jsonl` 与跨进程写入锁 `.ledger.lock`（自动回收僵尸锁）；工作区 `.research/alignment/` 保存结构化对齐卡 Markdown。进化目录包含 `contract.json`、`archive.jsonl`、`archive-receipts.jsonl`、`gens/`、`packets/`、`verdicts/`、`backups/`。
 
 ## clusterScale
 
@@ -102,7 +104,7 @@ Ledger 根目录包含 `ledger.jsonl`、`ledger-receipts.jsonl`、`guard-log.jso
 - `delegate`：默认值，主从编排，修复轮上限 2。
 - `cluster`：开放实验性集群编排，修复轮上限 2。
 
-路由只看 Ledger 产物状态；修复轮计数由调用方维护，不写入 Ledger。
+`repairFailed` 会以 `repair-attempt` 事件按 `task` 持久化写入 Ledger（并在 `reset` 或 `completion-attempt` 完成后归零），跨会话重启仍生效。
 
 ## 开发与验收
 

@@ -22,8 +22,12 @@ try {
   let defs = [];
   try { defs = ctx.tools.definitions(undefined); } catch (e) { defs = { err: String(e) }; }
   const names = Array.isArray(defs) ? defs.map(d => d.name) : defs;
-  step('P0 全部 9 个研究契约工具注册在案（官方 definitions() 可见）',
-    Array.isArray(names) && ['findings.record', 'findings.status', 'findings.aggregate', 'findings.challenge', 'findings.route', 'findings.verify', 'findings.gate-skip', 'findings.unknown', 'findings.resolve'].every(n => names.includes(n)),
+  step('P0 全部 13 个研究契约工具注册在案（官方 definitions() 可见）',
+    Array.isArray(names) && [
+      'findings.record', 'findings.status', 'findings.aggregate', 'findings.challenge',
+      'findings.route', 'findings.verify', 'findings.gate-skip', 'findings.unknown', 'findings.resolve',
+      'findings.ingest', 'findings.mark-verified', 'findings.spans', 'alignment.record',
+    ].every(n => names.includes(n)),
     Array.isArray(names) ? names.join(',') : JSON.stringify(names).slice(0, 120));
   const recDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.record') : null;
   step('P0 注册定义带 schema + execute + render',
@@ -44,7 +48,7 @@ try {
   const guardLog = readFileSync(LEDGER_DIR + '/guard-log.jsonl', 'utf8').trim().split('\n').map(l => JSON.parse(l));
   const wiredEntry = guardLog.find(g => g.kind === 'wired');
   step('P1 拒绝留痕 guard-log.jsonl（wired 版本对齐 + denial）',
-    wiredEntry?.version === PKG_VERSION && wiredEntry?.tools?.length === 9 && guardLog.some(g => g.code === 'EVIDENCE_NO_PROVENANCE'),
+    wiredEntry?.version === PKG_VERSION && wiredEntry?.tools?.length === 13 && guardLog.some(g => g.code === 'EVIDENCE_NO_PROVENANCE'),
     'v=' + wiredEntry?.version + ' | ' + guardLog.map(g => g.kind + (g.code ? ':' + g.code : '')).join(' | '));
 
   // ---- P2: 未决 blocker 挡 complete ----
@@ -362,6 +366,74 @@ try {
       JSON.stringify(p9Cmd));
   } finally {
     rmSync(p9Ws, { recursive: true, force: true });
+  }
+
+  // ---- P10: v0.8.0 P1 工具面扩展（ingest/mark-verified、spans、alignment.record、按 task 持久化 repairFailed）----
+  const p10Ws = mkdtempSync(join(tmpdir(), 'dsh-research-harness-p10-'));
+  try {
+    const ingestDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.ingest') : null;
+    const mvDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.mark-verified') : null;
+    const ingOut = ingestDef
+      ? await ingestDef.execute({
+          source: 'p10-subagent',
+          task: 'TASK-1001',
+          markdown: '```findings\n[{"claim":"P10 子代理实测吞吐提升 12%","confidence":"observed","provenance":"tool:pytest"}]\n```\n',
+        }, { name: 'findings.ingest', cwd: p10Ws })
+      : null;
+    const mvOut = mvDef && ingOut?.ids?.[0]
+      ? await mvDef.execute({ id: ingOut.ids[0], note: 'P10 主控亲验通过' }, { name: 'findings.mark-verified' })
+      : null;
+    step('P10 findings.ingest + findings.mark-verified 闭环',
+      ingOut?.ingested === 1 && mvOut?.status === 'lead-verified' && mvOut?.ref === ingOut.ids[0],
+      'ingested=' + JSON.stringify(ingOut?.ids) + ' verified=' + mvOut?.id);
+
+    const spanExec = { name: 'read', callId: 'p10-call-1', cwd: p10Ws, arguments: { filePath: join(p10Ws, 'data.txt') } };
+    writeFileSync(join(p10Ws, 'data.txt'), 'ok\n', 'utf8');
+    ctx.tools.checkGuards(spanExec);
+    ctx.emit('tools/result', spanExec, { content: [{ type: 'text', text: 'ok' }], isError: false });
+    const spansDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.spans') : null;
+    const spanOut = spansDef ? await spansDef.execute({ limit: 10 }, { name: 'findings.spans' }) : null;
+    step('P10 SpanRecorder + findings.spans 观测闭合',
+      existsSync(join(LEDGER_DIR, 'spans.jsonl')) && spanOut?.totalCalls >= 1 && Array.isArray(spanOut?.ranking) && spanOut.ranking.length >= 1,
+      'calls=' + spanOut?.totalCalls + ' top=' + spanOut?.ranking?.[0]?.tool);
+
+    const alignDef = Array.isArray(defs) ? defs.find(d => d.name === 'alignment.record') : null;
+    const alignOut = alignDef
+      ? await alignDef.execute({
+          slug: 'p10-proto',
+          topic: 'P10 协议预期对齐',
+          layers: {
+            goal: '验证真实 DSH 上下文持久化对齐卡',
+            constraints: '禁止绕过 evidence gate',
+            deliverables: ['alignment markdown', 'ledger sync entries'],
+            success_criteria: '文件可读且未知项与 reframe 同步入账',
+            assumptions: 'p10Ws 为隔离工作区',
+            non_goals: '不修改源码树',
+          },
+          probes: [
+            { layer: 'goal', question: '是否重构核心架构?', verdict: 'reframe', note: '仅验证契约闭环' },
+          ],
+          open_unknowns: [
+            { what: '远端指标延迟尚未测量', classification: 'non-blocker', why: '本地协议验收暂不依赖' },
+          ],
+        }, { name: 'alignment.record', cwd: p10Ws })
+      : null;
+    const alignFile = join(p10Ws, '.research', 'alignment', 'p10-proto.md');
+    const es10 = new Ledger(LEDGER_DIR).entries();
+    step('P10 alignment.record 持久化对齐卡与同步 ledger',
+      alignOut?.slug === 'p10-proto' && alignOut?.unknownsAdded === 1 && alignOut?.reframesRecorded === 1
+      && existsSync(alignFile) && es10.some(e => e.kind === 'alignment-reframe' && e.slug === 'p10-proto'),
+      'path=' + alignOut?.path);
+
+    const routeDef10 = Array.isArray(defs) ? defs.find(d => d.name === 'findings.route') : null;
+    const rA1 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10A', repairFailed: true }, { name: 'findings.route' }) : null;
+    const rA2 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10A', repairFailed: true }, { name: 'findings.route' }) : null;
+    const rB1 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10B' }, { name: 'findings.route' }) : null;
+    step('P10 findings.route 按 task 持久化 repairFailed（不串任务）',
+      rA1?.action !== 'BLOCKED' && rA2?.action === 'BLOCKED' && rA2?.detail?.task === 'TASK-P10A' && rB1?.action !== 'BLOCKED',
+      'A1=' + rA1?.action + ' A2=' + rA2?.action + ' B1=' + rB1?.action);
+  } finally {
+    rmSync(p10Ws, { recursive: true, force: true });
   }
 
   // ---- verdict ----

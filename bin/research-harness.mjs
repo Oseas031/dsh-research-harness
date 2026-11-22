@@ -11,6 +11,8 @@ import { route } from '../lib/route.js';
 import { verifyLedger } from '../lib/receipts.js';
 import { ingestReport, markVerified } from '../lib/ingest.js';
 import { createVerifier } from '../lib/verifier.js';
+import { readSpans, summarizeSpans } from '../lib/spans.js';
+import { readAlignmentCard, syncAlignmentToLedger, writeAlignmentCard } from '../lib/alignment.js';
 
 const USAGE = `用法: research-harness <command> [flags]
 命令:
@@ -19,16 +21,21 @@ const USAGE = `用法: research-harness <command> [flags]
   add-unknown --what W --why Y [--classification non-blocker|blocker|parameterizable]
   resolve --id U3 --resolution R
   gate-skip --gate G --reason R --risk R --compensation C [--covers U1,U2]
-  route [--scale solo|delegate|cluster] [--acceptance acceptance.json]
+  route [--scale solo|delegate|cluster] [--task TASK-0000] [--repair-failed] [--acceptance acceptance.json]
   verify                                  收据核对（drifted 时 exit 1）
   verify-cmd --cmd <json数组或安全命令> [--timeout <ms>]   异步运行外部命令校验器
+  spans [--limit 20]                      查看工具调用 Span 耗时排行与明细
+  alignment save --file card.json [--root DIR] [--sync]   保存 6 层预期对齐卡（可选同步到 ledger）
+  alignment read --file .research/alignment/x.md          读取对齐卡结构化内容
   status                                  台账统计 + 未决 blocker
   ingest --file report.md --source SRC [--task TASK-0000]
   mark-verified --id E5 [--note ...]
   evolve init --name E --surface 'skills/<name>/**' [--evals evals/skills/<name>] [--root DIR]
   evolve hash --file skills/x/SKILL.md [--root DIR]
   evolve apply --name E --candidate proposal.json [--root DIR]
+  evolve eval --name E --cmd <json数组或安全命令> [--timeout <ms>] [--root DIR]
   evolve select --name E [--root DIR] [--ledger DIR]
+  evolve rollback --name E [--gen N] [--to-parent] [--reason ...] [--root DIR] [--ledger DIR]
   evolve log|verify|champion --name E [--root DIR]
   version                                 输出包名与版本号（同 --version / -v）
 通用: --ledger DIR（缺省 ./.research 或 $RESEARCH_LEDGER）`;
@@ -90,8 +97,14 @@ try {
     case 'route': {
       let acceptance;
       if (typeof flags.acceptance === 'string') acceptance = JSON.parse(readFileSync(resolve(flags.acceptance), 'utf8'));
-      const r = route(led, { clusterScale: flags.scale ?? 'delegate', ...(acceptance ? { acceptance } : {}) });
-      led.append({ kind: 'route-check', action: r.action, why: r.why }); // 检查点落账（issue #6 配套）
+      const taskKey = typeof flags.task === 'string' && flags.task.trim()
+        ? flags.task.trim()
+        : (acceptance?.task ?? 'default');
+      if (flags['repair-failed'] === true || flags['repair-failed'] === 'true') {
+        led.recordRepairFailure({ task: taskKey, reason: typeof flags.reason === 'string' ? flags.reason : 'cli --repair-failed' });
+      }
+      const r = route(led, { clusterScale: flags.scale ?? 'delegate', task: taskKey, ...(acceptance ? { acceptance } : {}) });
+      led.append({ kind: 'route-check', action: r.action, why: r.why, task: taskKey }); // 检查点落账（issue #6 配套）
       out({ ok: true, ledger: led.file, ...r }); break;
     }
     case 'verify': {
@@ -107,6 +120,33 @@ try {
       out(res);
       if (!res.pass) process.exit(1);
       break;
+    }
+    case 'spans': {
+      const limit = flags.limit ? Number(flags.limit) : 20;
+      const spans = readSpans(join(dir, 'spans.jsonl'));
+      out({ ok: true, spansFile: join(dir, 'spans.jsonl'), ...summarizeSpans(spans, { limit }) });
+      break;
+    }
+    case 'alignment': {
+      const sub = args[1];
+      if (sub === 'save') {
+        const wsRoot = flags.root ? resolve(flags.root) : process.cwd();
+        const card = JSON.parse(readFileSync(resolve(need('file')), 'utf8'));
+        const written = writeAlignmentCard(wsRoot, card);
+        let synced = null;
+        if (flags.sync === true || flags.sync === 'true') {
+          led.ensure();
+          synced = syncAlignmentToLedger(written.card, led);
+        }
+        out({ ok: true, slug: written.slug, path: written.path, ...(synced ? { synced } : {}) });
+        break;
+      }
+      if (sub === 'read') {
+        const card = readAlignmentCard(resolve(need('file')));
+        out({ ok: true, card });
+        break;
+      }
+      console.error('未知 alignment 子命令: ' + String(sub) + '（save/read）'); process.exit(1);
     }
     case 'status': {
       const stats = led.stats();
@@ -139,11 +179,25 @@ try {
         if (result.status === 'invalid') process.exitCode = 2;
         break;
       }
+      if (sub === 'eval') {
+        const rawCmd = need('cmd').trim();
+        const command = rawCmd.startsWith('[') ? JSON.parse(rawCmd) : rawCmd;
+        const timeoutMs = flags.timeout ? Number(flags.timeout) : undefined;
+        const res = await ev.runEvaluator(command, Number.isFinite(timeoutMs) ? { timeoutMs } : {});
+        out({ ok: true, ...res }); break;
+      }
       if (sub === 'select') { out({ ok: true, ...ev.select({ ledger: led }) }); break; }
+      if (sub === 'rollback') {
+        const genNum = flags.gen !== undefined ? Number(flags.gen) : undefined;
+        const toParent = flags['to-parent'] === true || flags['to-parent'] === 'true';
+        const reason = typeof flags.reason === 'string' ? flags.reason : undefined;
+        const useLedger = flags.ledger ? led : undefined;
+        out({ ok: true, ...ev.rollback({ gen: genNum, toParent, reason, ledger: useLedger }) }); break;
+      }
       if (sub === 'log') { out({ events: ev.log() }); break; }
       if (sub === 'verify') { const result = ev.verifyArchive(); out(result); if (!result.ok) process.exitCode = 1; break; }
       if (sub === 'champion') { out({ champion: ev.champion() }); break; }
-      console.error('未知 evolve 子命令: ' + String(sub) + '（init/hash/apply/select/log/verify/champion）'); process.exit(1);
+      console.error('未知 evolve 子命令: ' + String(sub) + '（init/hash/apply/eval/select/rollback/log/verify/champion）'); process.exit(1);
     }
     default:
       console.error('未知命令: ' + cmd + '\n' + USAGE); process.exit(1);

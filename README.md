@@ -2,11 +2,17 @@
 
 面向 DSH 的科研工作台：把证据守卫、追加式台账、完成门禁、最短路径路由和 10 个科研技能装进独立「科研 Harness」预设。**技能是库存，证据契约是产品。**
 
-当前仓库版本：**v0.7.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
+当前仓库版本：**v0.8.0**。版本变化见 [CHANGELOG](CHANGELOG.md)，机制与文件契约见 [docs/README](docs/README.md)。
 
-## v0.7.0 能做什么
+## v0.8.0 能做什么
 
-- **工作区守卫解耦**：基于 DSH 真实 `exec.arguments` 与 `WorkingDirectoryService` 校验 `write`/`edit`/`apply_patch` 越界，不再把 `ledgerRoot` 误当作工作区；`read` 自动检测磁盘文件大小并拦截 >20MB 文本与二进制文件。
+- **工程闭环增强（P1）**：
+  - 按任务持久化的修复预算：`Ledger` 新增 `repair-attempt` 事件按 `task` 持久化失败修复轮数（`recordRepairFailure` / `resetRepairRounds` / `repairRoundsOf`），`findings.route`（及 `route --repair-failed --task`）跨会话不归零也不串任务。
+  - 证据时效与文件 provenance 复核：`aggregate` 支持 `maxAgeHours` 自动将超期条目降档为 `# TODO stale`（`counts.stale`）；`evidence` 校验器支持 `checkFileExists` 检验引用文件真实存在且行号不越界。
+  - 回合可观测性：`SpanRecorder` 监听守卫放行与 `tools/result`，写入脱敏 `spans.jsonl`；插件新增 `findings.spans`（CLI：`research-harness spans`）输出工具耗时排行与最近调用。
+  - 6 层结构化预期对齐卡：新增 `alignment.record` 工具与 CLI `alignment save|read`，将 6 层预期、探测裁决（`adopt|reject|reframe`）与未知项持久化到 `.research/alignment/<slug>.md` 并同步至台账。
+  - 工具面与进化闭环补全：新增 `findings.ingest` 与 `findings.mark-verified`，注册工具数扩充至 13 个；`Evolver` 新增 `rollback()` 与隔离异步双盲评审执行器 `runEvaluator()`（CLI：`evolve eval` / `evolve rollback`）。
+- **工作区守卫解耦（v0.7.0 P0）**：基于 DSH 真实 `exec.arguments` 与 `WorkingDirectoryService` 校验 `write`/`edit`/`apply_patch` 越界，不再把 `ledgerRoot` 误当作工作区；`read` 自动检测磁盘文件大小并拦截 >20MB 文本与二进制文件。
 - **多项目分账与并发锁**：默认按工作区自动隔离台账（`~/.dsh/research-harness/projects/<slug-hash>/`），写入经跨进程 `wx` 排他锁保障 `seq` 单调且收据严格对齐。
 - **安全异步命令校验器**：`verifier(command)` 强制 `shell: false`、argv 数组传参、环境变量白名单、拒绝 shell 元字符与 `verifyAsync()` 进程树超时回收；CLI 新增 `verify-cmd`。
 - **证据入账**：研究发现必须带 `provenance` 与 `confidence`（`observed` / `inferred` / `unknown`），支持 `task` 标签和 `verifiedBy`（`agent-reported` / `lead-verified`）验证状态；并提供 `findings.unknown` 与 `findings.resolve` 对齐 CLI 的完整 unknown/challenge 工具链。
@@ -15,7 +21,7 @@
 - **证据收据**：机制写入台账时同步写 SHA-256 收据；`verify` 可发现改行、删行和缺失收据。
 - **报告入账与复验**：把报告中的 `findings` 代码块结构化导入，区分 `agent-reported` 与 `lead-verified`。
 - **全技能评估与进化闭环**：为全部 10 个内置科研技能配备冻结行为评估矩阵（`evals/skills/`）及 `SKILL.md <= 8192` 字符红线，支持随机 A/B 配对评审、keep/revert 与回滚保护。
-- **端到端产物流水线**：内置 `harness-lab/scenarios/pipeline-e2e.mjs`（`npm run test:e2e`），在真实 `cordis` 上下文串通 实验 CSV → `sci-figure` 300dpi 出图 → `latex-paper-en` PDF 编译 → 9 工具证据闭环。
+- **端到端产物流水线**：内置 `harness-lab/scenarios/pipeline-e2e.mjs`（`npm run test:e2e`），在真实 `cordis` 上下文串通 实验 CSV → `sci-figure` 300dpi 出图 → `latex-paper-en` PDF 编译 → `findings.*` 证据闭环。
 - **任务级验收计数**：`acceptance.task` 将 `minFindings` 与 `minObservedRatio` 的统计限定到当前 `REQ-xxxx` / `TASK-xxxx`，便于共享台账。
 
 ## 环境与实测边界
@@ -29,22 +35,22 @@
 
 ### npm
 
-把 v0.7.0 安装进 DSH 的 `web` profile（使用其他 profile 时替换名称）：
+把 v0.8.0 安装进 DSH 的 `web` profile（使用其他 profile 时替换名称）：
 
 ```bash
-dsh plugin --profile web add dsh-research-harness@0.7.0
+dsh plugin --profile web add dsh-research-harness@0.8.0
 ```
 
 只需要独立 CLI 时，也可以全局安装：
 
 ```bash
-npm install -g dsh-research-harness@0.7.0
+npm install -g dsh-research-harness@0.8.0
 ```
 
 ### GitHub
 
 ```bash
-dsh plugin --profile web add github:Oseas031/dsh-research-harness#v0.7.0
+dsh plugin --profile web add github:Oseas031/dsh-research-harness#v0.8.0
 ```
 
 也可以从源码安装 CLI：
@@ -58,7 +64,7 @@ npm link
 
 `dsh plugin add` 会把包安装进指定 profile，并处理包声明的 `dsh.bundle` patch。**安装、更新或修改预设组合后，完全退出并重启 DSH**，再选择「科研 Harness」。只使用独立 CLI 时不需要重启 DSH。
 
-重启后检查 `findings.record`、`findings.status`、`findings.unknown`、`findings.resolve`、`findings.route`、`findings.verify` 等 9 个工具是否可用，并确认技能 provider 已注册 10 个技能。未全局安装 CLI 时，可在仓库根目录把下文中的 `research-harness` 换成 `node bin/research-harness.mjs`。
+重启后检查 `findings.record`、`findings.status`、`findings.aggregate`、`findings.challenge`、`findings.route`、`findings.verify`、`findings.gate-skip`、`findings.unknown`、`findings.resolve`、`findings.ingest`、`findings.mark-verified`、`findings.spans`、`alignment.record` 共 13 个工具是否可用，并确认技能 provider 已注册 10 个技能。未全局安装 CLI 时，可在仓库根目录把下文中的 `research-harness` 换成 `node bin/research-harness.mjs`。
 
 ## CLI Quickstart
 

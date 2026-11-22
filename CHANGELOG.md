@@ -2,6 +2,24 @@
 
 本文件记录仓库版本变化。版本号本身不表示 npm 发布或远端 CI 状态；二者以各自的实际记录为准。
 
+## [0.8.0]
+
+### Added
+
+- `lib/ledger.js` 与 `lib/route.js` 支持按 `task` 持久化 `repairRounds`（新增 `recordRepairFailure`、`resetRepairRounds`、`repairRoundsOf`），`findings.route` 与 CLI `route --repair-failed --task` 跨会话保留失败轮数并在任务完成后自动归零。
+- `lib/aggregate.js` 支持 `maxAgeHours` 时效自动降档：超期 `observed`/`inferred` finding 降为 `todo`（`# TODO stale`、`confidence: 'unknown'`、`stale: true`），`counts` 增 `stale` 计数。
+- `lib/evidence-gate.js` 与 `lib/verifier.js` 新增 `verifyFileProvenance()`，在 `verifier.checkFileExists = true` 时校验 `file:line` 引用文件存在且行号不越界。
+- 新增 `lib/spans.js`：通过 `guardFn` 放行前 `SpanRecorder.start()` 与 `ctx.on('tools/result')` `end()` 自动收集工具耗时与错误，敏感参数字段脱敏 `[REDACTED]` 并截断至 160 字符，落盘 `spans.jsonl`。
+- 新增 `lib/alignment.js`：6 层结构化预期对齐卡校验、`Markdown` 无损持久化和 `syncAlignmentToLedger()`。
+- 新增插件工具 `findings.ingest`、`findings.mark-verified`、`findings.spans`、`alignment.record`（总计 13 个注册工具）；CLI 新增 `spans`、`alignment save|read`、`evolve eval`、`evolve rollback`。
+- `lib/evolve.js` 新增 `rollback({ gen, toParent, reason, ledger })`（与重放事件流的 `champion()`）以及隔离异步评审执行器 `runEvaluator()`；复用 `lib/verifier.js` 的 `buildSafeEnv` 与 `runAsyncCommand`。
+- 新增 `test/v080.test.mjs` 与 `harness-lab/protocol.mjs` `P10` 契约验收。
+
+### Changed
+
+- `lib/ingest.js` 抽取 `ingestMarkdown()` 供 `ingestReport()` 与 `findings.ingest` 工具共用。
+- `lib/verifier.js` 导出共享 `buildSafeEnv()`、`killTree()`、`runAsyncCommand()`，消除异步子进程管控逻辑重复。
+
 ## [0.7.0]
 
 ### Added
