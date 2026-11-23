@@ -25,10 +25,10 @@ test('evidence-gate: gateEntry 与 gateExec', () => {
   assert.equal(gateEntry({ claim: 'ok', confidence: 'observed', provenance: 'a.py:1' }), null);
   assert.equal(gateEntry({ claim: 'xx', confidence: 'observed' }).code, 'EVIDENCE_NO_PROVENANCE');
   assert.equal(gateEntry({ claim: 'xx', confidence: 'maybe', provenance: 'a.py:1' }).code, 'EVIDENCE_BAD_CONFIDENCE');
-  const d = gateExec('findings.record', { entries: [{ claim: 'xx', confidence: 'observed' }] });
+  const d = gateExec('findings_record', { entries: [{ claim: 'xx', confidence: 'observed' }] });
   assert.equal(d.code, 'EVIDENCE_NO_PROVENANCE');
   assert.ok(d.reason.includes('entries[0]'));
-  assert.equal(gateExec('findings.record', { entries: [{ claim: 'xx', confidence: 'observed', provenance: 'a.py:1' }] }), null);
+  assert.equal(gateExec('findings_record', { entries: [{ claim: 'xx', confidence: 'observed', provenance: 'a.py:1' }] }), null);
   assert.equal(gateExec('other.tool', { entries: [] }), null);
 });
 
@@ -90,27 +90,27 @@ test('apply(): 守卫与工具挂载、拒无 provenance、放行有 provenance�
   apply(ctx, { ledgerRoot: root, clusterScale: 'delegate' });
   assert.equal(guards.length, 1);
   const names = tools.map(t => t.name);
-  assert.ok(names.includes('findings.record'));
-  assert.ok(names.includes('findings.status'));
-  const rec = tools.find(t => t.name === 'findings.record');
+  assert.ok(names.includes('findings_record'));
+  assert.ok(names.includes('findings_status'));
+  const rec = tools.find(t => t.name === 'findings_record');
   assert.ok(rec.parameters.properties.entries);
   assert.ok(typeof rec.output.render === 'function');
 
   const g = guards[0];
   // 拒：无 provenance
-  const d1 = g({ name: 'findings.record', args: { entries: [{ claim: 'xx', confidence: 'observed' }] } });
+  const d1 = g({ name: 'findings_record', args: { entries: [{ claim: 'xx', confidence: 'observed' }] } });
   assert.equal(d1.info.code, 'EVIDENCE_NO_PROVENANCE');
   // 放行 + 执行入账
-  assert.equal(g({ name: 'findings.record', args: { entries: [{ claim: 'xx', confidence: 'observed', provenance: 'a.py:1' }] } }), undefined);
+  assert.equal(g({ name: 'findings_record', args: { entries: [{ claim: 'xx', confidence: 'observed', provenance: 'a.py:1' }] } }), undefined);
   // guard-log 已落两条（一条 wired + 一条拒绝）
   const log = readFileSync(join(root, 'guard-log.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
   assert.ok(log.some(e => e.code === 'EVIDENCE_NO_PROVENANCE'));
   assert.ok(log.some(e => e.kind === 'wired'));
   // 执行体入账
   const out = rec.execute({ entries: [{ claim: 'works', confidence: 'observed', provenance: 'https://x' }] });
-  // 同步 execute 返回 promise —— findings.record 是 async
+  // 同步 execute 返回 promise —— findings_record 是 async
   Promise.resolve(out).then(r => assert.equal(r.recorded, 1));
-  const st = tools.find(t => t.name === 'findings.status');
+  const st = tools.find(t => t.name === 'findings_status');
   // 完成语义拒
   const l2 = new Ledger(root);
   l2.addUnknown({ what: '缺', classification: 'blocker' });

@@ -2,6 +2,26 @@
 
 本文件记录仓库版本变化。版本号本身不表示 npm 发布或远端 CI 状态；二者以各自的实际记录为准。
 
+## [0.9.0]
+
+### Added
+
+- `lib/guards.js` 新增 `guardShellNetwork()` 离线隔离守卫（配置 `enforceOfflineShell: true` 启用）：拦截 `pwsh`/`bash`/`shell`/`terminal_send` 中的公网 HTTP/DNS 客户端调用（`Invoke-RestMethod`/`Invoke-WebRequest`/`irm`/`iwr`/`curl`/`wget`/`requests.*`/`urllib.request`/`httpx`/`fetch` 等）并返回 `SHELL_NETWORK_BLOCKED`，同时放行 `localhost`/`127.0.0.1`/`::1` 回环请求及普通本地统计脚本（不误杀包含 `https://doi.org/...` 的数据输出）。
+- `lib/route.js` `route()` 新增预算感知路由（`opts.budget`）：预算消耗达 `warnRatio`（默认 `0.7`）且 `findings === 0` 时返回 `action: 'checkpoint-findings'`，已有 findings 且无未覆盖 blocker 时返回 `action: 'finalize-now'`；未传 `budget` 时行为 100% 向后兼容，`BLOCKED` 与 `resolve-blockers` 仍优先。
+- `lib/index.js` 新增按台账目录跟踪的增量入账门（`incrementalCheckpoint: true | { enabled, maxAnalysisCalls, onlyAfterResults }`，默认触发码 `INCREMENTAL_RECORD_REQUIRED`）与预算硬收尾门（`budget: { maxToolCalls, maxDurationMs, warnRatio, hardFinalizeRatio }`，触发码 `BUDGET_FINALIZE_REQUIRED`，随 `findings_verify` 自动推进至纯文本最终回答）；放行 `read`/`glob`/`grep`/`findings_*`/`alignment_record`/`update_goal`/`str_replace_editor view` 防止死锁，`findings_record`/`findings_ingest`/`findings_unknown` 入账即解锁，`findings_route` 自动传入实时预算快照，`task` 参数说明明确仅接受 `REQ-xxxx`/`TASK-xxxx`（无 ID 省略）。
+- `lib/evidence-gate.js`：`validateProvenance()` 与 `verifyFileProvenance()` 扩展支持逗号分隔多行 provenance（如 `results/out.txt:5,7` 或 `results/out.txt:1,3-4`），并逐段核查行号界限。
+- `skills/validate-data/SKILL.md`、`dsh.patch.yml` 与 `instructions/RESEARCH.md` 补充浮点交叉验算容差规范（`math.isclose(..., rel_tol=1e-5, abs_tol=1e-6)`，避免 6 位舍入展示对比 float64 引发假阴性死循环）及阶段性增量落账收敛规则。
+- 新增 `test/v090.test.mjs` 与 `harness-lab/protocol.mjs` `P12` 真实运行时用例。
+
+## [0.8.2]
+
+### Fixed
+
+- 将全部 13 个注册工具名由带点号写法迁移为纯 `snake_case`（`findings_record`、`findings_status`、`findings_aggregate`、`findings_challenge`、`findings_route`、`findings_verify`、`findings_gate_skip`、`findings_unknown`、`findings_resolve`、`findings_ingest`、`findings_mark_verified`、`findings_spans`、`alignment_record`），符合 OpenAI / 华为码道（CodeArts InferHub）及各大模型网关强制的 `^[a-zA-Z0-9_-]{1,64}$` 函数命名规范，解决上游 HTTP 406 拒单问题。
+- 修复 `findings_verify`（补全 `receipts`）、`findings_status`（补全 `recent`）与 `findings_aggregate`（补全 `meanSem` 且 `rate` 支持 `{ oneOf: [{ type: 'number' }, { type: 'null' }] }`）在真实 DSH `ToolsService` 执行器下触发 `ToolOutputError: INVALID_TOOL_OUTPUT` 的输出 Schema 缺失问题。
+- `lib/index.js` 导出 `TOOL_NAME_RE`，`lib/evidence-gate.js` `gateExec()` 同时兼容 `findings_record` 与旧名 `findings.record`。
+- 同步更新 `dsh.patch.yml`、`instructions/RESEARCH.md`、`README.md`、`docs/README.md`、契约脚本与单测（新增工具命名合规防回归检查）。
+
 ## [0.8.1]
 
 ### Security & Reliability (P0)

@@ -24,23 +24,23 @@ try {
   const names = Array.isArray(defs) ? defs.map(d => d.name) : defs;
   step('P0 全部 13 个研究契约工具注册在案（官方 definitions() 可见）',
     Array.isArray(names) && [
-      'findings.record', 'findings.status', 'findings.aggregate', 'findings.challenge',
-      'findings.route', 'findings.verify', 'findings.gate-skip', 'findings.unknown', 'findings.resolve',
-      'findings.ingest', 'findings.mark-verified', 'findings.spans', 'alignment.record',
+      'findings_record', 'findings_status', 'findings_aggregate', 'findings_challenge',
+      'findings_route', 'findings_verify', 'findings_gate_skip', 'findings_unknown', 'findings_resolve',
+      'findings_ingest', 'findings_mark_verified', 'findings_spans', 'alignment_record',
     ].every(n => names.includes(n)),
     Array.isArray(names) ? names.join(',') : JSON.stringify(names).slice(0, 120));
-  const recDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.record') : null;
+  const recDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_record') : null;
   step('P0 注册定义带 schema + execute + render',
     !!(recDef?.parameters?.properties?.entries && typeof recDef?.execute === 'function' && typeof recDef?.output?.render === 'function'));
 
   // ---- P1: 无 provenance 当场拒（官方守卫链）----
-  const deny = ctx.tools.checkGuards({ name: 'findings.record', args: { entries: [{ claim: '无出处的断言内容', confidence: 'observed' }] } });
+  const deny = ctx.tools.checkGuards({ name: 'findings_record', args: { entries: [{ claim: '无出处的断言内容', confidence: 'observed' }] } });
   step('P1 无 provenance 被官方守卫链拒绝',
     String(deny?.reason ?? '').includes('EVIDENCE_NO_PROVENANCE'),
     '模型可见: ' + (deny ? ('Error: ' + deny.reason.slice(0, 80) + '…') : '(放行了!)'));
 
   // ---- P1b: 真执行入账（带 provenance，走 def.execute 真路径）----
-  const out = await recDef.execute({ entries: [{ claim: 'example.com 主从模式 Plus 档开放', confidence: 'observed', provenance: 'https://arxiv.org/html/2610.30808v1' }] }, { name: 'findings.record', agent: undefined });
+  const out = await recDef.execute({ entries: [{ claim: 'example.com 主从模式 Plus 档开放', confidence: 'observed', provenance: 'https://arxiv.org/html/2610.30808v1' }] }, { name: 'findings_record', agent: undefined });
   step('P1b def.execute 真执行入账', out?.recorded === 1 && out?.ids?.length === 1, JSON.stringify(out));
   const ledgerText = readFileSync(LEDGER_DIR + '/ledger.jsonl', 'utf8').trim().split('\n').map(l => JSON.parse(l));
   step('P1b ledger.jsonl 物化且可溯源', ledgerText.some(e => e.kind === 'finding' && e.provenance?.startsWith('https://arxiv')),
@@ -80,31 +80,31 @@ try {
     'sci-figure content ' + (def?.content?.length ?? 0) + 'B');
 
   // ---- P5: 收据层（v0.4）：机制行全 ok；手改立检；还原恢复 ----
-  const verifyDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.verify') : null;
-  const v1 = verifyDef ? await verifyDef.execute({}, { name: 'findings.verify' }) : null;
-  step('P5 findings.verify 收据核对（机制写入行全 ok）',
+  const verifyDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_verify') : null;
+  const v1 = verifyDef ? await verifyDef.execute({}, { name: 'findings_verify' }) : null;
+  step('P5 findings_verify 收据核对（机制写入行全 ok）',
     v1?.ok === true && v1?.checked >= 1 && (v1?.drifted?.length ?? 1) === 0, JSON.stringify(v1));
   const lf = LEDGER_DIR + '/ledger.jsonl';
   const rawLines = readFileSync(lf, 'utf8').split('\n').filter(Boolean);
   const backupLine = rawLines[rawLines.length - 1];
   rawLines[rawLines.length - 1] = backupLine + ' '; // 手改：行尾加空格（JSON 仍可解析，哈希必变）
   writeFileSync(lf, rawLines.join('\n') + '\n', 'utf8');
-  const v2 = verifyDef ? await verifyDef.execute({}, { name: 'findings.verify' }) : null;
+  const v2 = verifyDef ? await verifyDef.execute({}, { name: 'findings_verify' }) : null;
   step('P5 手改一行 → drifted 立即可检',
     v2?.ok === false && v2?.drifted?.length === 1, JSON.stringify(v2?.drifted));
   rawLines[rawLines.length - 1] = backupLine;
   writeFileSync(lf, rawLines.join('\n') + '\n', 'utf8');
-  const v3 = verifyDef ? await verifyDef.execute({}, { name: 'findings.verify' }) : null;
+  const v3 = verifyDef ? await verifyDef.execute({}, { name: 'findings_verify' }) : null;
   step('P5 还原后 verify 恢复 ok', v3?.ok === true, 'unverified=' + (v3?.unverified ?? '?'));
 
   // ---- P6: 软门禁跳过（v0.4）：缺字段拒；全字段覆盖后放行 ----
-  const skipDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.gate-skip') : null;
+  const skipDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_gate_skip') : null;
   const u6 = ledger.addUnknown({ what: '上游数据集未发布', classification: 'blocker' });
   const deny6 = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
   step('P6 新 blocker 再挡 complete',
     String(deny6?.reason ?? '').includes('EVIDENCE_BLOCKERS_OPEN'), '');
   let skipErr = '';
-  try { await skipDef.execute({ gate: 'EVIDENCE_BLOCKERS_OPEN', reason: '等上游发布', risk: '结论外推受限', compensation: '' }, { name: 'findings.gate-skip' }); }
+  try { await skipDef.execute({ gate: 'EVIDENCE_BLOCKERS_OPEN', reason: '等上游发布', risk: '结论外推受限', compensation: '' }, { name: 'findings_gate_skip' }); }
   catch (e) { skipErr = String(e?.message ?? e); }
   step('P6 gate-skip 缺 compensation 被拒', skipErr.includes('GATE_SKIP_BAD_FIELD'), skipErr.slice(0, 90));
   const skipOut = await skipDef.execute({
@@ -113,31 +113,31 @@ try {
     risk: '结论对该数据集外推受限',
     compensation: '上游发布后补跑基准并 record 新条目',
     covers: [u6.id],
-  }, { name: 'findings.gate-skip' });
+  }, { name: 'findings_gate_skip' });
   const pass6 = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
   step('P6 全字段 skip 覆盖后 complete 放行',
     skipOut?.skipped === 1 && pass6 === undefined, 'skip id=' + skipOut?.id + ' covers=' + u6.id);
 
   // ---- P7: 插件工具对齐（v0.6 unknown/resolve + 带 acceptance 的 route + 修复轮上限）----
-  const unknownDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.unknown') : null;
-  const resolveDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.resolve') : null;
-  const u7 = unknownDef ? await unknownDef.execute({ what: '协议测试缺口', classification: 'blocker' }, { name: 'findings.unknown' }) : null;
+  const unknownDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_unknown') : null;
+  const resolveDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_resolve') : null;
+  const u7 = unknownDef ? await unknownDef.execute({ what: '协议测试缺口', classification: 'blocker' }, { name: 'findings_unknown' }) : null;
   const deny7 = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
-  const res7 = resolveDef && u7?.id ? await resolveDef.execute({ id: u7.id, resolution: '真实上下文已验证解决' }, { name: 'findings.resolve' }) : null;
+  const res7 = resolveDef && u7?.id ? await resolveDef.execute({ id: u7.id, resolution: '真实上下文已验证解决' }, { name: 'findings_resolve' }) : null;
   const pass7 = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
-  step('P7b findings.unknown(blocker) → 挡 complete → findings.resolve 放行',
+  step('P7b findings_unknown(blocker) → 挡 complete → findings_resolve 放行',
     !!u7?.id && String(deny7?.reason ?? '').includes('EVIDENCE_BLOCKERS_OPEN') && res7?.status === 'resolved' && pass7 === undefined,
     'id=' + u7?.id + ' resolved=' + res7?.id);
 
-  const routeDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.route') : null;
-  const r7cont = routeDef ? await routeDef.execute({ acceptance: { minFindings: 99 } }, { name: 'findings.route' }) : null;
-  const r7 = routeDef ? await routeDef.execute({ acceptance: { minFindings: 1, minObservedRatio: 1 } }, { name: 'findings.route' }) : null;
+  const routeDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_route') : null;
+  const r7cont = routeDef ? await routeDef.execute({ acceptance: { minFindings: 99 } }, { name: 'findings_route' }) : null;
+  const r7 = routeDef ? await routeDef.execute({ acceptance: { minFindings: 1, minObservedRatio: 1 } }, { name: 'findings_route' }) : null;
   const routeCheckCount = new Ledger(LEDGER_DIR).entries().filter(e => e.kind === 'route-check').length;
-  step('P7 findings.route acceptance 充分性路由并自动落 route-check',
+  step('P7 findings_route acceptance 充分性路由并自动落 route-check',
     r7cont?.action === 'continue-recording' && r7?.action === 'run-acceptance' && routeCheckCount >= 2,
     'cont=' + r7cont?.action + ' pass=' + r7?.action + ' checks=' + routeCheckCount);
-  const r7b = routeDef ? await routeDef.execute({ repairFailed: true }, { name: 'findings.route' }) : null;
-  const r7c = routeDef ? await routeDef.execute({ repairFailed: true }, { name: 'findings.route' }) : null;
+  const r7b = routeDef ? await routeDef.execute({ repairFailed: true }, { name: 'findings_route' }) : null;
+  const r7c = routeDef ? await routeDef.execute({ repairFailed: true }, { name: 'findings_route' }) : null;
   step('P7 修复轮 2/2（delegate）→ BLOCKED',
     r7b?.action !== 'BLOCKED' && r7c?.action === 'BLOCKED', 'round1=' + r7b?.action + ' round2=' + r7c?.action);
 
@@ -347,7 +347,7 @@ try {
       arguments: { filePath: join(LEDGER_DIR, 'escape.md') },
     });
     const p9DenyArg = ctx.tools.checkGuards({
-      name: 'findings.record',
+      name: 'findings_record',
       arguments: { entries: [{ claim: 'exec.arguments 无来源', confidence: 'observed' }] },
     });
     step('P9 真实 DSH exec.arguments + 工作区/台账解耦守卫',
@@ -368,22 +368,22 @@ try {
     rmSync(p9Ws, { recursive: true, force: true });
   }
 
-  // ---- P10: v0.8.0 P1 工具面扩展（ingest/mark-verified、spans、alignment.record、按 task 持久化 repairFailed）----
+  // ---- P10: v0.8.0 P1 工具面扩展（ingest/mark-verified、spans、alignment_record、按 task 持久化 repairFailed）----
   const p10Ws = mkdtempSync(join(tmpdir(), 'dsh-research-harness-p10-'));
   try {
-    const ingestDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.ingest') : null;
-    const mvDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.mark-verified') : null;
+    const ingestDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_ingest') : null;
+    const mvDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_mark_verified') : null;
     const ingOut = ingestDef
       ? await ingestDef.execute({
           source: 'p10-subagent',
           task: 'TASK-1001',
           markdown: '```findings\n[{"claim":"P10 子代理实测吞吐提升 12%","confidence":"observed","provenance":"tool:pytest"}]\n```\n',
-        }, { name: 'findings.ingest', cwd: p10Ws })
+        }, { name: 'findings_ingest', cwd: p10Ws })
       : null;
     const mvOut = mvDef && ingOut?.ids?.[0]
-      ? await mvDef.execute({ id: ingOut.ids[0], note: 'P10 主控亲验通过' }, { name: 'findings.mark-verified' })
+      ? await mvDef.execute({ id: ingOut.ids[0], note: 'P10 主控亲验通过' }, { name: 'findings_mark_verified' })
       : null;
-    step('P10 findings.ingest + findings.mark-verified 闭环',
+    step('P10 findings_ingest + findings_mark_verified 闭环',
       ingOut?.ingested === 1 && mvOut?.status === 'lead-verified' && mvOut?.ref === ingOut.ids[0],
       'ingested=' + JSON.stringify(ingOut?.ids) + ' verified=' + mvOut?.id);
 
@@ -391,13 +391,13 @@ try {
     writeFileSync(join(p10Ws, 'data.txt'), 'ok\n', 'utf8');
     ctx.tools.checkGuards(spanExec);
     ctx.emit('tools/result', spanExec, { content: [{ type: 'text', text: 'ok' }], isError: false });
-    const spansDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings.spans') : null;
-    const spanOut = spansDef ? await spansDef.execute({ limit: 10 }, { name: 'findings.spans' }) : null;
-    step('P10 SpanRecorder + findings.spans 观测闭合',
+    const spansDef = Array.isArray(defs) ? defs.find(d => d.name === 'findings_spans') : null;
+    const spanOut = spansDef ? await spansDef.execute({ limit: 10 }, { name: 'findings_spans' }) : null;
+    step('P10 SpanRecorder + findings_spans 观测闭合',
       existsSync(join(LEDGER_DIR, 'spans.jsonl')) && spanOut?.totalCalls >= 1 && Array.isArray(spanOut?.ranking) && spanOut.ranking.length >= 1,
       'calls=' + spanOut?.totalCalls + ' top=' + spanOut?.ranking?.[0]?.tool);
 
-    const alignDef = Array.isArray(defs) ? defs.find(d => d.name === 'alignment.record') : null;
+    const alignDef = Array.isArray(defs) ? defs.find(d => d.name === 'alignment_record') : null;
     const alignOut = alignDef
       ? await alignDef.execute({
           slug: 'p10-proto',
@@ -416,20 +416,20 @@ try {
           open_unknowns: [
             { what: '远端指标延迟尚未测量', classification: 'non-blocker', why: '本地协议验收暂不依赖' },
           ],
-        }, { name: 'alignment.record', cwd: p10Ws })
+        }, { name: 'alignment_record', cwd: p10Ws })
       : null;
     const alignFile = join(p10Ws, '.research', 'alignment', 'p10-proto.md');
     const es10 = new Ledger(LEDGER_DIR).entries();
-    step('P10 alignment.record 持久化对齐卡与同步 ledger',
+    step('P10 alignment_record 持久化对齐卡与同步 ledger',
       alignOut?.slug === 'p10-proto' && alignOut?.unknownsAdded === 1 && alignOut?.reframesRecorded === 1
       && existsSync(alignFile) && es10.some(e => e.kind === 'alignment-reframe' && e.slug === 'p10-proto'),
       'path=' + alignOut?.path);
 
-    const routeDef10 = Array.isArray(defs) ? defs.find(d => d.name === 'findings.route') : null;
-    const rA1 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10A', repairFailed: true }, { name: 'findings.route' }) : null;
-    const rA2 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10A', repairFailed: true }, { name: 'findings.route' }) : null;
-    const rB1 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10B' }, { name: 'findings.route' }) : null;
-    step('P10 findings.route 按 task 持久化 repairFailed（不串任务）',
+    const routeDef10 = Array.isArray(defs) ? defs.find(d => d.name === 'findings_route') : null;
+    const rA1 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10A', repairFailed: true }, { name: 'findings_route' }) : null;
+    const rA2 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10A', repairFailed: true }, { name: 'findings_route' }) : null;
+    const rB1 = routeDef10 ? await routeDef10.execute({ task: 'TASK-P10B' }, { name: 'findings_route' }) : null;
+    step('P10 findings_route 按 task 持久化 repairFailed（不串任务）',
       rA1?.action !== 'BLOCKED' && rA2?.action === 'BLOCKED' && rA2?.detail?.task === 'TASK-P10A' && rB1?.action !== 'BLOCKED',
       'A1=' + rA1?.action + ' A2=' + rA2?.action + ' B1=' + rB1?.action);
   } finally {
@@ -497,8 +497,8 @@ try {
     try {
       ctxP11 = await lab.boot('harness-lab-p11', p11Profile, [], undefined, lab.bareModuleBaseUrl);
       const defsP11 = ctxP11.tools.definitions(undefined);
-      const ingP11 = defsP11.find(d => d.name === 'findings.ingest');
-      const mvP11 = defsP11.find(d => d.name === 'findings.mark-verified');
+      const ingP11 = defsP11.find(d => d.name === 'findings_ingest');
+      const mvP11 = defsP11.find(d => d.name === 'findings_mark_verified');
 
       const p11ReadDeny = ctxP11.tools.checkGuards({
         name: 'read',
@@ -510,7 +510,7 @@ try {
         source: 'p11-sub',
         task: 'TASK-1101',
         markdown: '```findings\n[{"claim":"P11 子报告引用数据文件","confidence":"observed","provenance":"p11-data.csv:1"}]\n```\n',
-      }, { name: 'findings.ingest', cwd: p11IsoSubWs });
+      }, { name: 'findings_ingest', cwd: p11IsoSubWs });
 
       const p11CompleteDenyMissing = ctxP11.tools.checkGuards({
         name: 'update_goal',
@@ -519,7 +519,7 @@ try {
       });
 
       writeFileSync(join(p11IsoSubWs, 'p11-data.csv'), 'x\n1\n', 'utf8');
-      const mv11 = await mvP11.execute({ id: ingOk1.ids[0], note: 'P11 文件已落盘核验' }, { name: 'findings.mark-verified', cwd: p11IsoSubWs });
+      const mv11 = await mvP11.execute({ id: ingOk1.ids[0], note: 'P11 文件已落盘核验' }, { name: 'findings_mark_verified', cwd: p11IsoSubWs });
       const p11CompletePass = ctxP11.tools.checkGuards({
         name: 'update_goal',
         cwd: p11IsoSubWs,
@@ -530,7 +530,7 @@ try {
         source: 'p11-empty',
         task: 'TASK-1102',
         markdown: '```findings\n[{"claim":"P11 无来源子报告占位应被拦截","confidence":"observed"}]\n```\n',
-      }, { name: 'findings.ingest', cwd: p11IsoSubWs });
+      }, { name: 'findings_ingest', cwd: p11IsoSubWs });
       const p11CompleteDenyPlaceholder = ctxP11.tools.checkGuards({
         name: 'update_goal',
         cwd: p11IsoSubWs,
@@ -547,11 +547,203 @@ try {
           + ' missing=' + p11CompleteDenyMissing?.info?.code
           + ' pass=' + String(p11CompletePass)
           + ' placeholder=' + p11CompleteDenyPlaceholder?.info?.code);
+
+      // P11b: 用真实 @deepseek-ai/dsh-tools validateJsonSchemaValue 对全部 13 工具真实输出做全量校验
+      const { validateJsonSchemaValue, assertSupportedJsonSchema } = await import(
+        new URL('@deepseek-ai/dsh-tools/lib/index.js', lab.bareModuleBaseUrl).href
+      );
+      const p11SchemaWs = join(p11Ws, 'ws-schema');
+      const p11SchemaLedger = join(p11Ws, 'ledger-schema');
+      const p11SchemaProfile = join(p11Ws, 'p11-schema-cordis.yml');
+      mkdirSync(p11SchemaWs, { recursive: true });
+      writeFileSync(join(p11SchemaWs, 'd.csv'), 'k\n1\n', 'utf8');
+      writeFileSync(p11SchemaProfile, [
+        '- id: system-prompt',
+        "  name: '@deepseek-ai/dsh-system-prompt'",
+        '- id: tools',
+        "  name: '@deepseek-ai/dsh-tools'",
+        '- id: skill',
+        "  name: '@deepseek-ai/dsh-skill'",
+        '- id: research-harness-core',
+        '  name: ' + JSON.stringify(join(REPO_ROOT, 'lib', 'index.js')),
+        '  config:',
+        '    clusterScale: delegate',
+        '    ledgerRoot: ' + JSON.stringify(p11SchemaLedger),
+        '    workspaceRoot: ' + JSON.stringify(p11SchemaWs),
+      ].join('\n') + '\n', 'utf8');
+      let ctxSchema;
+      try {
+        ctxSchema = await lab.boot('harness-lab-p11-schema', p11SchemaProfile, [], undefined, lab.bareModuleBaseUrl);
+        const sDefs = ctxSchema.tools.definitions(undefined);
+        const byS = Object.fromEntries(sDefs.map(d => [d.name, d]));
+        const schemaErrs = [];
+        const checkOut = async (toolName, execArgs) => {
+          const defObj = byS[toolName];
+          assertSupportedJsonSchema(defObj.output.schema, toolName + '.output');
+          const outVal = await defObj.execute(execArgs, { name: toolName, cwd: p11SchemaWs });
+          const v = validateJsonSchemaValue(defObj.output.schema, outVal);
+          if (v.length) schemaErrs.push(toolName + ': ' + v.join('; '));
+          return outVal;
+        };
+
+        await checkOut('findings_aggregate', {}); // empty ledger -> rate: null
+        await checkOut('findings_status', {});
+        const recS = await checkOut('findings_record', {
+          entries: [
+            { claim: 'metric_x', confidence: 'observed', provenance: 'd.csv:1', metric: 0.71 },
+            { claim: 'metric_x', confidence: 'observed', provenance: 'd.csv:2', metric: 0.75 },
+          ],
+        });
+        await checkOut('findings_status', {});
+        await checkOut('findings_aggregate', {}); // multi-seed -> meanSem
+        const chS = await checkOut('findings_challenge', {
+          ref: recS.ids[0], hypothesis: '反例假设陈述', cito: 'disagreesWith', provenance: 'd.csv:1',
+        });
+        await checkOut('findings_resolve', { id: chS.id, kind: 'challenge', resolution: '核实成立' });
+        const unkS = await checkOut('findings_unknown', { what: '缺口S', classification: 'blocker' });
+        await checkOut('findings_gate_skip', {
+          gate: 'EVIDENCE_BLOCKERS_OPEN', reason: '验证输出格式', risk: '临时跳过风险', compensation: '即刻验证关闭', covers: [unkS.id],
+        });
+        await checkOut('findings_route', { task: 'TASK-0011' });
+        await checkOut('findings_verify', {});
+        const ingS = await checkOut('findings_ingest', {
+          source: 'schema-sub', markdown: '```findings\n[{"claim":"ingest output test","confidence":"observed","provenance":"d.csv:1"}]\n```\n',
+        });
+        await checkOut('findings_mark_verified', { id: ingS.ids[0], note: 'schema 核验' });
+        await checkOut('findings_spans', { limit: 5 });
+        await checkOut('alignment_record', {
+          slug: 'schema-card',
+          topic: 'schema validation',
+          layers: { goal: 'g', constraints: 'c', deliverables: 'd', success_criteria: 's', assumptions: 'a', non_goals: 'n' },
+        });
+        step('P11b 全部 13 个工具真实 execute() 返回值均通过 @deepseek-ai/dsh-tools validateJsonSchemaValue',
+          schemaErrs.length === 0,
+          schemaErrs.length ? schemaErrs.join(' | ') : '13/13 output schemas valid');
+      } finally {
+        try { await ctxSchema?.fiber?.dispose(); } catch {}
+      }
     } finally {
       try { await ctxP11?.fiber?.dispose(); } catch {}
     }
   } finally {
     rmSync(p11Ws, { recursive: true, force: true });
+  }
+
+  // ---- P12: v0.9.0 离线 Shell 联网守卫 + 增量入账门 + 预算感知收尾（真实 cordis 运行时）----
+  const p12Ws = mkdtempSync(join(tmpdir(), 'dsh-research-harness-p12-'));
+  try {
+    const p12SubWs = join(p12Ws, 'ws');
+    const p12Ledger = join(p12Ws, 'ledger');
+    const p12Profile = join(p12Ws, 'p12-cordis.yml');
+    mkdirSync(p12SubWs, { recursive: true });
+    writeFileSync(join(p12SubWs, 'sample.csv'), 'x,y\n1,2\n', 'utf8');
+    writeFileSync(p12Profile, [
+      '- id: system-prompt',
+      "  name: '@deepseek-ai/dsh-system-prompt'",
+      '- id: tools',
+      "  name: '@deepseek-ai/dsh-tools'",
+      '- id: skill',
+      "  name: '@deepseek-ai/dsh-skill'",
+      '- id: research-harness-core',
+      '  name: ' + JSON.stringify(join(REPO_ROOT, 'lib', 'index.js')),
+      '  config:',
+      '    clusterScale: delegate',
+      '    ledgerRoot: ' + JSON.stringify(p12Ledger),
+      '    workspaceRoot: ' + JSON.stringify(p12SubWs),
+      '    enforceReadInsideWorkspace: true',
+      '    enforceOfflineShell: true',
+      '    incrementalCheckpoint:',
+      '      enabled: true',
+      '      maxAnalysisCalls: 2',
+      '    budget:',
+      '      maxToolCalls: 6',
+      '      warnRatio: 0.5',
+      '      hardFinalizeRatio: 0.8',
+    ].join('\n') + '\n', 'utf8');
+
+    const { validateJsonSchemaValue } = await import(
+      new URL('@deepseek-ai/dsh-tools/lib/index.js', lab.bareModuleBaseUrl).href
+    );
+    let ctxP12;
+    try {
+      ctxP12 = await lab.boot('harness-lab-p12', p12Profile, [], undefined, lab.bareModuleBaseUrl);
+      const defsP12 = ctxP12.tools.definitions(undefined);
+      const byP12 = Object.fromEntries(defsP12.map(d => [d.name, d]));
+
+      const p12NetDeny = ctxP12.tools.checkGuards({
+        name: 'pwsh',
+        cwd: p12SubWs,
+        arguments: { command: 'Invoke-RestMethod https://api.openalex.org/works/1' },
+      });
+      const p12Local1 = ctxP12.tools.checkGuards({
+        name: 'pwsh',
+        cwd: p12SubWs,
+        arguments: { command: 'python -B analyze1.py' },
+      });
+      const p12Local2 = ctxP12.tools.checkGuards({
+        name: 'pwsh',
+        cwd: p12SubWs,
+        arguments: { command: 'python -B analyze2.py' },
+      });
+      const p12IncDeny = ctxP12.tools.checkGuards({
+        name: 'pwsh',
+        cwd: p12SubWs,
+        arguments: { command: 'python -B analyze3.py' },
+      });
+      const p12ReadOk = ctxP12.tools.checkGuards({
+        name: 'read',
+        cwd: p12SubWs,
+        arguments: { filePath: join(p12SubWs, 'sample.csv') },
+      });
+      const recArgs = { entries: [{ claim: 'P12 本地样本行数=1', confidence: 'observed', provenance: 'sample.csv:1' }] };
+      const p12RecGuard = ctxP12.tools.checkGuards({ name: 'findings_record', cwd: p12SubWs, arguments: recArgs });
+      await byP12.findings_record.execute(recArgs, { name: 'findings_record', cwd: p12SubWs });
+
+      // 此时已放行 4 次（pwsh*2 + read*1 + findings_record*1），第 5 次（4/6=0.667 < 0.8 且增量已清零）应放行解锁！
+      const p12Unlocked = ctxP12.tools.checkGuards({
+        name: 'pwsh',
+        cwd: p12SubWs,
+        arguments: { command: 'python -B analyze3.py' },
+      });
+      // 第 6 次（5/6=0.833 >= 0.8）先看 findings_route → finalize-now，再调 pwsh → BUDGET_FINALIZE_REQUIRED
+      const p12RouteGuard = ctxP12.tools.checkGuards({ name: 'findings_route', cwd: p12SubWs, arguments: {} });
+      const routeOut = await byP12.findings_route.execute({}, { name: 'findings_route', cwd: p12SubWs });
+      const routeErrs = validateJsonSchemaValue(byP12.findings_route.output.schema, routeOut);
+
+      const p12BudgetDeny = ctxP12.tools.checkGuards({
+        name: 'pwsh',
+        cwd: p12SubWs,
+        arguments: { command: 'python -B analyze4.py' },
+      });
+      const p12VerifyGuard = ctxP12.tools.checkGuards({ name: 'findings_verify', cwd: p12SubWs, arguments: {} });
+      const verifyOut = await byP12.findings_verify.execute({}, { name: 'findings_verify', cwd: p12SubWs });
+      const verifyErrs = validateJsonSchemaValue(byP12.findings_verify.output.schema, verifyOut);
+
+      step('P12 enforceOfflineShell + INCREMENTAL_RECORD_REQUIRED + BUDGET_FINALIZE_REQUIRED 全链真实闭环',
+        p12NetDeny?.info?.code === 'SHELL_NETWORK_BLOCKED'
+        && p12Local1 === undefined
+        && p12Local2 === undefined
+        && p12IncDeny?.info?.code === 'INCREMENTAL_RECORD_REQUIRED'
+        && p12ReadOk === undefined
+        && p12RecGuard === undefined
+        && p12Unlocked === undefined
+        && p12RouteGuard === undefined
+        && routeOut?.action === 'finalize-now'
+        && routeErrs.length === 0
+        && p12BudgetDeny?.info?.code === 'BUDGET_FINALIZE_REQUIRED'
+        && p12VerifyGuard === undefined
+        && verifyOut?.ok === true
+        && verifyErrs.length === 0,
+        'net=' + p12NetDeny?.info?.code
+          + ' inc=' + p12IncDeny?.info?.code
+          + ' unlocked=' + String(p12Unlocked)
+          + ' route=' + routeOut?.action
+          + ' budget=' + p12BudgetDeny?.info?.code);
+    } finally {
+      try { await ctxP12?.fiber?.dispose(); } catch {}
+    }
+  } finally {
+    rmSync(p12Ws, { recursive: true, force: true });
   }
 
   // ---- verdict ----

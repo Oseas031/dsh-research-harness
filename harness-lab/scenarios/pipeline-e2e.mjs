@@ -1,7 +1,7 @@
 // DAG N11 / N13 端到端科研产物流水线验收（完全离线、全产物落在临时目录、结束后彻底清理）：
 // 实验 CSV -> sci-figure/render.py (300dpi PNG + SVG + env.json + history)
 // -> latex-paper-en/scripts/compile.py (--recipe pdflatex-bibtex 编译含插图与引用的 PDF)
-// -> DSH 真实挂载工具链闭环 (findings.record -> findings.unknown -> blocker 拦截 -> findings.resolve -> findings.aggregate -> findings.verify -> findings.route -> complete 放行)
+// -> DSH 真实挂载工具链闭环 (findings_record -> findings_unknown -> blocker 拦截 -> findings_resolve -> findings_aggregate -> findings_verify -> findings_route -> complete 放行)
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -144,12 +144,12 @@ export default async ({ ctx, defs, step, ledgerDir }) => {
       'exit=' + compileRun.status + ' pdf=' + pdfBytes.length + 'B' + (compileRun.status !== 0 ? ' out=' + String(compileRun.stdout + compileRun.stderr).slice(-220) : ''));
 
     // ---- Step 4: 真实挂载 DSH 工具链证据闭环 ----
-    const recordDef = defs.find(d => d.name === 'findings.record');
-    const unknownDef = defs.find(d => d.name === 'findings.unknown');
-    const resolveDef = defs.find(d => d.name === 'findings.resolve');
-    const aggregateDef = defs.find(d => d.name === 'findings.aggregate');
-    const verifyDef = defs.find(d => d.name === 'findings.verify');
-    const routeDef = defs.find(d => d.name === 'findings.route');
+    const recordDef = defs.find(d => d.name === 'findings_record');
+    const unknownDef = defs.find(d => d.name === 'findings_unknown');
+    const resolveDef = defs.find(d => d.name === 'findings_resolve');
+    const aggregateDef = defs.find(d => d.name === 'findings_aggregate');
+    const verifyDef = defs.find(d => d.name === 'findings_verify');
+    const routeDef = defs.find(d => d.name === 'findings_route');
     step('E2E-4 DSH 挂载全部 9 个研究契约工具',
       !!(recordDef && unknownDef && resolveDef && aggregateDef && verifyDef && routeDef),
       defs.map(d => d.name).join(','));
@@ -185,8 +185,8 @@ export default async ({ ctx, defs, step, ledgerDir }) => {
           repro: { build_type: 'pdflatex-bibtex', subject_digest: createHash('sha256').update(pdfBytes).digest('hex') },
         },
       ],
-    }, { name: 'findings.record' });
-    step('E2E-5 findings.record 入账 3 条带 metric/repro/verifiedBy 观测发现',
+    }, { name: 'findings_record' });
+    step('E2E-5 findings_record 入账 3 条带 metric/repro/verifiedBy 观测发现',
       recOut?.recorded === 3 && recOut?.ids?.length === 3,
       JSON.stringify(recOut));
 
@@ -194,25 +194,25 @@ export default async ({ ctx, defs, step, ledgerDir }) => {
       what: '需确认附录消融表是否已纳入正文编译统计',
       why: '未核对完整论文页数上限',
       classification: 'blocker',
-    }, { name: 'findings.unknown' });
+    }, { name: 'findings_unknown' });
     const denyComplete = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
-    step('E2E-6 findings.unknown(blocker) 成功阻止 update_goal complete',
+    step('E2E-6 findings_unknown(blocker) 成功阻止 update_goal complete',
       !!uOut?.id && String(denyComplete?.reason ?? '').includes('EVIDENCE_BLOCKERS_OPEN'),
       'unknown=' + uOut?.id + ' deny=' + String(denyComplete?.info?.code ?? ''));
 
     const resOut = await resolveDef.execute({
       id: uOut.id,
       resolution: '已确认主文单页精简排版完整覆盖 3 组实验消融结果',
-    }, { name: 'findings.resolve' });
-    step('E2E-7 findings.resolve 解除 blocker',
+    }, { name: 'findings_resolve' });
+    step('E2E-7 findings_resolve 解除 blocker',
       resOut?.ref === uOut.id && resOut?.status === 'resolved',
       JSON.stringify(resOut));
 
-    const aggOut = await aggregateDef.execute({}, { name: 'findings.aggregate' });
-    const verOut = await verifyDef.execute({}, { name: 'findings.verify' });
+    const aggOut = await aggregateDef.execute({}, { name: 'findings_aggregate' });
+    const verOut = await verifyDef.execute({}, { name: 'findings_verify' });
     const routeOut = await routeDef.execute({
       acceptance: { minFindings: 3, minObservedRatio: 1, task: 'TASK-0600' },
-    }, { name: 'findings.route' });
+    }, { name: 'findings_route' });
     const hasRouteCheck = new Ledger(ledgerDir).entries().some(e => e.kind === 'route-check' && e.action === 'run-acceptance');
     const passComplete = ctx.tools.checkGuards({ name: 'update_goal', args: { action: 'complete' } });
 

@@ -10,7 +10,7 @@
 - **强制串行**：同一时刻只有一条活动线（clusterScale=cluster 时显式例外，并行数仍按派单纪律）。不并发推进两个互相依赖的步骤。
 - **修复轮上限 3/2**：同一任务修复 3 轮（solo）/ 2 轮（delegate/cluster）仍失败 → BLOCKED——把失败证据 record 成 unknown(blocker)，以 inconclusive 收尾或交人裁决。禁止无限重试。
 
-**最短路路由（产物即状态）**：开工、卡住、收尾前先调 `findings.route`——台账状态决定下一步（resolve-blockers / record-findings / run-acceptance / BLOCKED），不凭记忆排程。
+**最短路路由（产物即状态）**：开工、卡住、收尾前先调 `findings_route`——台账状态决定下一步（resolve-blockers / record-findings / run-acceptance / BLOCKED），不凭记忆排程。
 
 ## 开工前对齐（expectation-alignment 技能）
 
@@ -23,7 +23,7 @@
 3. **计算可复现**：数字要么来自读到的数据，要么来自当场执行的命令，并留可重跑脚本。
 4. **交付前自检**：来源、计算、引用、结论对齐——四项过完才交。
 
-## 证据台账（findings.record）
+## 证据台账（findings_record）
 
 研究发现一律入账，一条一行，append-only（.research/ledger.jsonl）：
 
@@ -43,7 +43,7 @@
 | 文件:行号 | `src/app.py:42`、`E:/ws/data.csv:10-18` |
 | 工具引用 | `tool:web_search "example.com pricing"` |
 
-查台账：`findings.status` → 统计 + 未决 blocker + 最近条目。
+查台账：`findings_status` → 统计 + 未决 blocker + 最近条目。
 
 ## unknown 会计
 
@@ -67,6 +67,8 @@
 - 工作区外读写 → WRITE/READ_OUTSIDE_WORKSPACE 拒（前缀相似也拒：E:/ws ≠ E:/ws-evil）。
 - 二进制/模型文件直接 Read → READ_BINARY 拒（清单见 guards.js），交给专用脚本。
 - 超 20MB 文本 → READ_TOO_LARGE 拒。
+- 离线隔离模式下（`enforceOfflineShell=true`）Shell/终端发起公网 HTTP/DNS 请求 → SHELL_NETWORK_BLOCKED 拒（放行 localhost/127.0.0.1/::1 与纯本地数据分析脚本）。
+- 增量里程碑与预算收尾门（启用 `incrementalCheckpoint`/`budget` 时）：连续多次分析/写操作未入账触发 INCREMENTAL_RECORD_REQUIRED（`findings_record`/`findings_unknown` 后解锁）；接近预算上限触发 BUDGET_FINALIZE_REQUIRED，`findings_route` 给出 `checkpoint-findings`/`finalize-now`（只读与 `findings_*`、`alignment_record`、`update_goal` 工具始终放行）；浮点交叉验算统一用 `math.isclose(..., rel_tol=1e-5, abs_tol=1e-6)`。
 - 子代理派单缺 description/prompt、prompt 超 20000 字符、子代理直接持有 bash/pwsh/write/edit → 拒。
 - clusterScale=solo 时一切 subagent 派单 → 拒（可玩参数：solo/delegate/cluster）。
 

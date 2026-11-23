@@ -7,13 +7,13 @@ export default async function run({ ctx, defs, step, ledgerDir }) {
   const find = (name) => defsArr.find(d => d.name === name);
 
   // P0: 四工具全部注册在案（官方 definitions）
-  step('P0 四工具注册在案', ['findings.record', 'findings.status', 'findings.aggregate', 'findings.challenge'].every(n => !!find(n)),
-    ['findings.record', 'findings.status', 'findings.aggregate', 'findings.challenge'].join(','));
-  const aggDef = find('findings.aggregate');
-  const chDef = find('findings.challenge');
+  step('P0 四工具注册在案', ['findings_record', 'findings_status', 'findings_aggregate', 'findings_challenge'].every(n => !!find(n)),
+    ['findings_record', 'findings_status', 'findings_aggregate', 'findings_challenge'].join(','));
+  const aggDef = find('findings_aggregate');
+  const chDef = find('findings_challenge');
   step('P0 aggregate/challenge 定义带 schema+execute+render', !!(aggDef?.parameters && aggDef?.execute && aggDef?.output?.render && chDef?.parameters && chDef?.execute && chDef?.output?.render));
 
-  const recDef = find('findings.record');
+  const recDef = find('findings_record');
   // P1: 成本槽入账（OTel 词表）
   const r1 = await recDef.execute({ entries: [{ claim: 'v03 数值发现', confidence: 'observed', provenance: 'tool:run_code', metric: 0.71, tokens: { input_tokens: 1200, output_tokens: 300, 'reasoning.output_tokens': 80, cost_usd: 0.15 } }] });
   step('P1 cost+metric 槽入账', r1.recorded === 1, JSON.stringify(r1.ids));
@@ -29,7 +29,7 @@ export default async function run({ ctx, defs, step, ledgerDir }) {
   const recDefIds = r1.ids;
   const ch = await chDef.execute({ ref: recDefIds[0], hypothesis: '该数值在反向假设下不成立', cito: 'refutes', provenance: 'https://arxiv.org/abs/2502.14297' });
   step('P2 challenge 落账', !!ch.id && ch.ref === recDefIds[0], ch.id);
-  const stDef = find('findings.status');
+  const stDef = find('findings_status');
   const st1 = await stDef.execute({});
   const hasChBl = (st1.blockers ?? []).some(b => /未决挑战/.test(String(b.what)));
   step('P2 未决挑战计 blocker', hasChBl, JSON.stringify((st1.blockers ?? []).map(b => b.id)));

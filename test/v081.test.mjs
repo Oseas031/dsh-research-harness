@@ -14,13 +14,13 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { apply as applyPlugin } from '../lib/index.js';
+import { apply as applyPlugin, TOOL_NAME_RE } from '../lib/index.js';
 import { check, guardBinaryRead } from '../lib/guards.js';
 import { Ledger } from '../lib/ledger.js';
 import { completionGate } from '../lib/completion.js';
 import { Evolver, sha256Bytes, surfaceViolation } from '../lib/evolve.js';
 import { createHarnessSkillProvider } from '../lib/skill-provider.js';
-import { validateProvenance, verifyFileProvenance } from '../lib/evidence-gate.js';
+import { gateExec, validateProvenance, verifyFileProvenance } from '../lib/evidence-gate.js';
 import { createVerifier } from '../lib/verifier.js';
 import { verifyLedger } from '../lib/receipts.js';
 import { validateChallenge } from '../lib/challenge.js';
@@ -409,4 +409,67 @@ test('v0.8.1 P1-4/5: compile.py --timeout/MIKTEX_AUTOINSTALL 与 CLI UTF-8 BOM J
   } finally {
     rmSync(ws, { recursive: true, force: true });
   }
+});
+
+test('v0.8.2 P0 工具命名与 output.schema 对齐：13 个工具合规、findings_status/verify/aggregate 字段完整', async (t) => {
+  const ws = tmp('rh-toolnames-v082-');
+  const dir = join(ws, '.research');
+  t.after(() => rmSync(ws, { recursive: true, force: true }));
+  const tools = [];
+  const ctx = {
+    logger: { info() {}, error() {} },
+    tools: { guard() { return () => {}; }, register(def) { tools.push(def); return () => {}; } },
+    on() { return () => {}; },
+  };
+  applyPlugin(ctx, { ledgerRoot: dir, workspaceRoot: ws });
+  assert.equal(tools.length, 13);
+  for (const def of tools) {
+    assert.ok(!def.name.includes('.'), '工具名不得包含点号: ' + def.name);
+    assert.match(def.name, TOOL_NAME_RE, '工具名不满足上游函数命名正则: ' + def.name);
+  }
+  assert.equal(gateExec('findings_record', { entries: [{ claim: '合法断言陈述', confidence: 'observed' }] })?.code, 'EVIDENCE_NO_PROVENANCE');
+  assert.equal(gateExec('findings.record', { entries: [{ claim: '合法断言陈述', confidence: 'observed' }] })?.code, 'EVIDENCE_NO_PROVENANCE');
+  assert.equal(gateExec('findings_record', { entries: [{ claim: '合法断言陈述', confidence: 'observed', provenance: 'tool:ok' }] }), null);
+
+  const byName = Object.fromEntries(tools.map(d => [d.name, d]));
+  const assertKeysDeclared = (name, out) => {
+    const sch = byName[name].output.schema;
+    for (const req of sch.required ?? []) {
+      assert.ok(Object.hasOwn(out, req) && out[req] !== undefined, `${name} 缺少 required 字段: ${req}`);
+    }
+    if (sch.additionalProperties === false) {
+      for (const k of Object.keys(out)) {
+        assert.ok(Object.hasOwn(sch.properties, k), `${name} 返回未在 output.schema 声明的字段: ${k}`);
+      }
+    }
+  };
+
+  // 空台账 findings_aggregate (rate === null) 与 findings_status / findings_verify
+  const aggEmpty = await byName.findings_aggregate.execute({}, { name: 'findings_aggregate', cwd: ws });
+  assert.equal(aggEmpty.rate, null);
+  assertKeysDeclared('findings_aggregate', aggEmpty);
+
+  const stEmpty = await byName.findings_status.execute({}, { name: 'findings_status', cwd: ws });
+  assert.ok(Array.isArray(stEmpty.recent));
+  assertKeysDeclared('findings_status', stEmpty);
+
+  // 多 seed 写入后验证 findings_status (recent)、findings_verify (receipts)、findings_aggregate (meanSem)
+  await byName.findings_record.execute({
+    entries: [
+      { claim: 'acc', confidence: 'observed', provenance: 'tool:s1', metric: 0.81 },
+      { claim: 'acc', confidence: 'observed', provenance: 'tool:s2', metric: 0.83 },
+    ],
+  }, { name: 'findings_record', cwd: ws });
+
+  const stPop = await byName.findings_status.execute({}, { name: 'findings_status', cwd: ws });
+  assert.equal(stPop.recent.length, 2);
+  assertKeysDeclared('findings_status', stPop);
+
+  const verOut = await byName.findings_verify.execute({}, { name: 'findings_verify', cwd: ws });
+  assert.equal(typeof verOut.receipts, 'number');
+  assertKeysDeclared('findings_verify', verOut);
+
+  const aggSeed = await byName.findings_aggregate.execute({}, { name: 'findings_aggregate', cwd: ws });
+  assert.ok(Array.isArray(aggSeed.meanSem) && aggSeed.meanSem.length === 1);
+  assertKeysDeclared('findings_aggregate', aggSeed);
 });

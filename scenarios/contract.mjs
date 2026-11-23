@@ -11,18 +11,18 @@ export default async ({ ctx, defs, step, targetConfig }) => {
   step('P0 真实服务挂载（ToolsService + SystemPrompt）',
     !!(ctx.tools && typeof ctx.tools.checkGuards === 'function'));
   const names = defs.map(d => d.name);
-  step('P0 findings.record / findings.status 注册在案（官方 definitions() 可见）',
-    names.includes('findings.record') && names.includes('findings.status'), names.join(','));
-  const recDef = defs.find(d => d.name === 'findings.record');
+  step('P0 findings_record / findings_status 注册在案（官方 definitions() 可见）',
+    names.includes('findings_record') && names.includes('findings_status'), names.join(','));
+  const recDef = defs.find(d => d.name === 'findings_record');
   step('P0 注册定义带 schema + execute + render',
     !!(recDef && recDef.parameters && recDef.parameters.properties && recDef.parameters.properties.entries && typeof recDef.execute === 'function' && recDef.output && typeof recDef.output.render === 'function'));
 
-  const deny = ctx.tools.checkGuards({ name: 'findings.record', args: { entries: [{ claim: '无出处断言若干字', confidence: 'observed' }] } });
+  const deny = ctx.tools.checkGuards({ name: 'findings_record', args: { entries: [{ claim: '无出处断言若干字', confidence: 'observed' }] } });
   step('P1 无 provenance 被官方守卫链拒绝',
     String(deny && deny.reason || '').includes('EVIDENCE_NO_PROVENANCE'),
     '模型可见: ' + (deny ? 'Error: ' + String(deny.reason).slice(0, 80) : '(放行了!)'));
 
-  const out = await recDef.execute({ entries: [{ claim: 'arXiv 论文分工表述', confidence: 'observed', provenance: 'https://arxiv.org/html/2610.30808v1' }] }, { name: 'findings.record', agent: undefined });
+  const out = await recDef.execute({ entries: [{ claim: 'arXiv 论文分工表述', confidence: 'observed', provenance: 'https://arxiv.org/html/2610.30808v1' }] }, { name: 'findings_record', agent: undefined });
   step('P1b def.execute 真执行入账', out && out.recorded === 1 && out.ids && out.ids.length === 1, JSON.stringify(out));
   const entries = readFileSync(join(ledgerDir, 'ledger.jsonl'), 'utf8').trim().split('\n').map(l => JSON.parse(l));
   step('P1b ledger.jsonl 物化且可溯源', entries.some(e => e.kind === 'finding' && String(e.provenance || '').startsWith('https://arxiv')),

@@ -1,6 +1,6 @@
 # dsh-research-harness — 当前机制与文件契约
 
-> **当前版本：v0.8.1。本文件是机制、目录与数据契约的真相源。**
+> **当前版本：v0.9.0。本文件是机制、目录与数据契约的真相源。**
 > 新用户安装与 Quickstart 见 [根 README](../README.md)；版本变化见 [CHANGELOG](../CHANGELOG.md)。
 
 dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：**技能是库存，证据契约是产品。**
@@ -8,7 +8,7 @@ dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：*
 ## 证据契约闭环
 
 ```text
-研究发现 ──findings.record──▶ 守卫检查 provenance
+研究发现 ──findings_record──▶ 守卫检查 provenance
    │缺                           │在场且合法
    ▼                            ▼
 当场拒绝并写 guard-log       ledger.jsonl 入账
@@ -26,9 +26,9 @@ dsh-research-harness 是一个 DSH 插件加独立「科研 Harness」预设：*
 
 1. finding 必须带来源；`task` 只接受 `REQ-xxxx` / `TASK-xxxx`。
 2. unknown 分为 blocker、non-blocker、parameterizable；未决 blocker 与完成语义直接关联。
-3. 软门禁例外通过 `findings.gate-skip` 留下 `reason`、`risk`、`compensation`，并用 `covers` 指名覆盖的 blocker。
-4. `findings.route` 只根据产物状态给出下一步；`acceptance` 可要求最低发现数、observed 比例和 route-check 数。
-5. 机制写入 Ledger 时同步写 SHA-256 收据；`findings.verify` 报告 `drifted` 与 `unverified`。收据证明的是行完整性，不是研究结论的真实性。
+3. 软门禁例外通过 `findings_gate_skip` 留下 `reason`、`risk`、`compensation`，并用 `covers` 指名覆盖的 blocker。
+4. `findings_route` 只根据产物状态给出下一步；`acceptance` 可要求最低发现数、observed 比例和 route-check 数；传入 `budget` 时达 `warnRatio` 可输出 `checkpoint-findings` / `finalize-now`。
+5. 机制写入 Ledger 时同步写 SHA-256 收据；`findings_verify` 报告 `drifted` 与 `unverified`。收据证明的是行完整性，不是研究结论的真实性。
 6. 子代理报告可经 `ingest` 入账，初始为 `agent-reported`，复核后升级为 `lead-verified`。
 
 ## v0.5.0 技能进化
@@ -64,13 +64,13 @@ init 冻结契约与 evaluator_id
 | `requiredRouteChecks` | 全台账最少 `route-check` 数 |
 | `task` | 将 finding 与 observed 统计限定到指定 REQ/TASK；route-check 仍为全局计数 |
 
-主要动作：`record-findings`（空台账）、`resolve-blockers`（有未覆盖 blocker）、`continue-recording`（充分性不足）、`run-acceptance`（可进入验收）、`BLOCKED`（达到修复轮上限）。
+主要动作：`record-findings`（空台账）、`resolve-blockers`（有未覆盖 blocker）、`continue-recording`（充分性不足）、`checkpoint-findings` / `finalize-now`（预算消耗达 `warnRatio`）、`run-acceptance`（可进入验收）、`BLOCKED`（达到修复轮上限）。
 
 ## 目录与模块
 
-- `lib/index.js` — 插件入口，从 `package.json` 动态读取版本号，注册 13 个契约工具（含 `findings.unknown`/`findings.resolve`、`findings.ingest`/`findings.mark-verified`、`findings.spans`、`alignment.record` 与对齐 `acceptance` 的 `findings.route`）、守卫、`tools/result` Span 监听、子代理审计监听与技能 provider。
+- `lib/index.js` — 插件入口，从 `package.json` 动态读取版本号，注册 13 个契约工具（含 `findings_unknown`/`findings_resolve`、`findings_ingest`/`findings_mark_verified`、`findings_spans`、`alignment_record` 与对齐 `acceptance` 的 `findings_route`）、守卫、`tools/result` Span 监听、子代理审计监听与技能 provider。
 - `lib/guards.js` — 守卫纯函数与统一 `check()` 入口。
-- `lib/evidence-gate.js` — provenance 校验、file:line 存在性/行号核查（`verifyFileProvenance`）、`findings.record` 门控与子代理报告审计。
+- `lib/evidence-gate.js` — provenance 校验、file:line 存在性/行号核查（`verifyFileProvenance`）、`findings_record` 门控与子代理报告审计。
 - `lib/ledger.js` — 追加式台账、unknown 会计、task、按任务持久化 `repair-attempt`、软门禁跳过与统计。
 - `lib/receipts.js` — Ledger 行级 SHA-256 收据及漂移核对。
 - `lib/completion.js` — blocker 完成门禁与 inconclusive 通道。

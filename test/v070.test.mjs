@@ -89,9 +89,9 @@ test('P0-1 index: 对接 DSH exec.arguments 与 workingDirectory，写入工作�
     guard({ name: 'apply_patch', arguments: { patchText: '*** Begin Patch\n*** Add File: ../evil.txt\n*** End Patch' }, agent: { session } }).info.code,
     'WRITE_OUTSIDE_WORKSPACE',
   );
-  // exec.arguments 上的 findings.record 无 provenance 被拦截
+  // exec.arguments 上的 findings_record 无 provenance 被拦截
   assert.equal(
-    guard({ name: 'findings.record', arguments: { entries: [{ claim: '无来源断言', confidence: 'observed' }] }, agent: { session } }).info.code,
+    guard({ name: 'findings_record', arguments: { entries: [{ claim: '无来源断言', confidence: 'observed' }] }, agent: { session } }).info.code,
     'EVIDENCE_NO_PROVENANCE',
   );
 });
@@ -131,8 +131,8 @@ test('P0-2 多项目分账隔离：不同工作区互不阻塞 complete，各自
   assert.notEqual(resolveLedgerDir(ctx, execA, {}), resolveLedgerDir(ctx, execB, {}));
   assert.equal(resolveWorkspaceRoot(ctx, execA, {}), wsA);
 
-  await getTool('findings.unknown').execute({ what: '项目 A 缺实验数据', classification: 'blocker' }, execA);
-  await getTool('findings.record').execute({
+  await getTool('findings_unknown').execute({ what: '项目 A 缺实验数据', classification: 'blocker' }, execA);
+  await getTool('findings_record').execute({
     entries: [{ claim: '项目 B 指标已确认', confidence: 'observed', provenance: 'results.csv:2' }],
   }, execB);
 
@@ -145,7 +145,7 @@ test('P0-2 多项目分账隔离：不同工作区互不阻塞 complete，各自
   assert.ok(existsSync(join(dirA, 'workspace.json')));
   assert.ok(existsSync(join(dirB, 'workspace.json')));
   assert.equal(JSON.parse(readFileSync(join(dirA, 'workspace.json'), 'utf8')).workspace, wsA);
-  assert.equal((await getTool('findings.status').execute({}, execB)).blockers.length, 0);
+  assert.equal((await getTool('findings_status').execute({}, execB)).blockers.length, 0);
 });
 
 test('P0-2 跨进程排他锁：6 进程并发 60 条入账 seq 无碰撞且收据 0 漂移，支持僵尸锁回收', async (t) => {

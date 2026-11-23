@@ -1,6 +1,6 @@
 {
   "name": "dsh-research-harness",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "type": "module",
   "main": "lib/index.js",
   "description": "科研工作台：证据守卫、台账、完成门禁、CLI、配对技能进化与 10 个科研技能",

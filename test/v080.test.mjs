@@ -341,27 +341,27 @@ test('v0.8.0 P1: applyPlugin 注册全部 13 个合法 schema 工具并闭环运
     }
 
     // 触发一次 guard -> tools/result 产生 span
-    const execObj = { name: 'findings.status', callId: 't-1', arguments: { apiKey: 'hidden-val' } };
+    const execObj = { name: 'findings_status', callId: 't-1', arguments: { apiKey: 'hidden-val' } };
     assert.equal(registeredGuard(execObj), undefined);
     handlers.get('tools/result')(execObj, { content: [{ type: 'text', text: 'ok' }], isError: false });
 
     const byName = Object.fromEntries(tools.map(t => [t.name, t]));
-    const spanRes = await byName['findings.spans'].execute({ limit: 5 }, { name: 'findings.spans' });
+    const spanRes = await byName['findings_spans'].execute({ limit: 5 }, { name: 'findings_spans' });
     assert.equal(spanRes.totalCalls, 1);
     assert.ok(spanRes.recent[0].inputSummary.includes('[REDACTED]'));
 
-    // findings.ingest + mark-verified
-    const ing = await byName['findings.ingest'].execute({
+    // findings_ingest + mark-verified
+    const ing = await byName['findings_ingest'].execute({
       source: 'unit-md',
       task: 'TASK-0800',
       markdown: '```findings\n[{"claim":"P1 ingest 测试通过","confidence":"observed","provenance":"tool:node-test"}]\n```\n',
-    }, { name: 'findings.ingest' });
+    }, { name: 'findings_ingest' });
     assert.equal(ing.ingested, 1);
-    const mv = await byName['findings.mark-verified'].execute({ id: ing.ids[0], note: '已复验' }, { name: 'findings.mark-verified' });
+    const mv = await byName['findings_mark_verified'].execute({ id: ing.ids[0], note: '已复验' }, { name: 'findings_mark_verified' });
     assert.equal(mv.status, 'lead-verified');
 
-    // alignment.record
-    const alignOut = await byName['alignment.record'].execute({
+    // alignment_record
+    const alignOut = await byName['alignment_record'].execute({
       slug: 'p1-unit',
       topic: '单测对齐',
       layers: {
@@ -369,22 +369,22 @@ test('v0.8.0 P1: applyPlugin 注册全部 13 个合法 schema 工具并闭环运
       },
       probes: [{ layer: 'goal', question: 'q1', verdict: 'reframe', note: 'adjusted' }],
       open_unknowns: [{ what: '待定边界', classification: 'non-blocker' }],
-    }, { name: 'alignment.record' });
+    }, { name: 'alignment_record' });
     assert.equal(alignOut.unknownsAdded, 1);
     assert.equal(alignOut.reframesRecorded, 1);
     assert.ok(existsSync(alignOut.path));
 
-    // findings.route 持久化按 task 计算 repairFailed
-    const r1 = await byName['findings.route'].execute({ task: 'TASK-0800', repairFailed: true }, { name: 'findings.route' });
+    // findings_route 持久化按 task 计算 repairFailed
+    const r1 = await byName['findings_route'].execute({ task: 'TASK-0800', repairFailed: true }, { name: 'findings_route' });
     assert.notEqual(r1.action, 'BLOCKED');
-    const r2 = await byName['findings.route'].execute({ task: 'TASK-0800', repairFailed: true }, { name: 'findings.route' });
+    const r2 = await byName['findings_route'].execute({ task: 'TASK-0800', repairFailed: true }, { name: 'findings_route' });
     assert.equal(r2.action, 'BLOCKED');
     assert.equal(r2.detail.task, 'TASK-0800');
 
-    // findings.aggregate 带入 maxAgeHours
+    // findings_aggregate 带入 maxAgeHours
     const l = new Ledger(ledgerDir, { receipts: true });
     l.append({ kind: 'finding', id: 'E99', claim: '陈旧条目', confidence: 'observed', provenance: 'tool:x', ts: '2020-01-01T00:00:00Z' });
-    const aggOut = await byName['findings.aggregate'].execute({}, { name: 'findings.aggregate' });
+    const aggOut = await byName['findings_aggregate'].execute({}, { name: 'findings_aggregate' });
     assert.equal(aggOut.counts.stale, 1);
   } finally {
     rmSync(ws, { recursive: true, force: true });
